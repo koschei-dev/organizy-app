@@ -22,6 +22,15 @@
   <img src=".github/readme/out/steps-light.svg" width="100%" alt="1. choose: pick a folder, or drop one on the Dock icon. 2. scan: Organizy reads names, types, sizes and contents. 3. review: change any destination or untick what should stay. 4. move: only ticked files move. 5. undo: every batch is in History, one click puts it back.">
 </picture>
 
+### `screenshots/`
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="site/screens/organize-dark.webp">
+  <img src="site/screens/organize-light.webp" width="100%" alt="Organizy's Organize screen: 21 files from a Downloads folder, each with a suggested folder and the reason.">
+</picture>
+
+<sub>Rendered automatically from a sample folder on every build.</sub>
+
 ### `features/`
 
 ```

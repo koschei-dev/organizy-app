@@ -194,3 +194,11 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding-top:20px;display
   .win-actions{width:100%}
   .win-actions .chip.go{margin-left:auto}
 }
+
+/* real app screenshots */
+.shot picture{display:block;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);transition:transform .3s ease,box-shadow .3s ease}
+.shot img{display:block;width:100%;height:auto}
+.shots{align-items:start}
+.shot:hover picture{transform:translateY(-4px);box-shadow:0 18px 40px -24px color-mix(in srgb,var(--accent) 45%,transparent)}
+.shot:first-child{grid-column:1 / -1}
+@media (min-width:761px){.shots{grid-template-columns:repeat(2,minmax(0,1fr))}}

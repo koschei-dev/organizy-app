@@ -6,23 +6,23 @@
 <p>
   <a href="../../releases/latest"><b>Download for macOS</b></a>
   &nbsp;·&nbsp;
-  <a href="https://seiunhim.github.io/organizy-app/#demo">Try the live demo</a>
+  <a href="https://koschei-dev.github.io/organizy-app/#demo">Try the live demo</a>
   &nbsp;·&nbsp;
-  <a href="https://seiunhim.github.io/organizy-app/">Website</a>
+  <a href="https://koschei-dev.github.io/organizy-app/">Website</a>
   &nbsp;·&nbsp;
   <a href="../../issues/new/choose">Report a bug</a>
 </p>
 
 <br>
 
-<a href="https://seiunhim.github.io/organizy-app/#demo">
+<a href="https://koschei-dev.github.io/organizy-app/#demo">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset=".github/readme/out/app-dark.svg">
     <img src=".github/readme/out/app-light.svg" width="100%" alt="Organizy sorting a Downloads folder: it reads eight files, suggests a folder for each with the reason, Rule or AI, and moves them only after you click Move Files.">
   </picture>
 </a>
 
-<sub>The website runs the same rules on a sample folder in your browser. <a href="https://seiunhim.github.io/organizy-app/#demo">Try it</a>.</sub>
+<sub>The website runs the same rules on a sample folder in your browser. <a href="https://koschei-dev.github.io/organizy-app/#demo">Try it</a>.</sub>
 
 <details>
 <summary>A real screenshot of the app</summary>
@@ -98,7 +98,7 @@ In Organizy, turn on Local AI. A green dot means it's ready. On a mixed test fol
 
 ## Feedback
 
-[Open an issue](../../issues/new/choose) for bugs and ideas, or leave a review on the [website](https://seiunhim.github.io/organizy-app/#reviews). Please don't paste real file names or contents you'd rather keep private. Found a security issue? See [SECURITY.md](SECURITY.md).
+[Open an issue](../../issues/new/choose) for bugs and ideas, or leave a review on the [website](https://koschei-dev.github.io/organizy-app/#reviews). Please don't paste real file names or contents you'd rather keep private. Found a security issue? See [SECURITY.md](SECURITY.md).
 
 ---
 

@@ -3,7 +3,7 @@
 
   pip install fonttools brotli && python3 .github/readme/build.py
 
-Uses svgkit.py, the same kit as the seiunhim profile, so the profile, this README and the
+Uses svgkit.py, the same kit as the koschei-dev profile, so the profile, this README and the
 website share one look: Bodoni Moda for display, Jost for text, DM Mono for file names.
 """
 from pathlib import Path

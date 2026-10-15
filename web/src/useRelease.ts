@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const REPO = "seiunhim/organizy-app";
+export const REPO = "koschei-dev/organizy-app";
 export const RELEASES = `https://github.com/${REPO}/releases/latest`;
 
 export type Release =

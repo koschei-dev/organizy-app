@@ -173,3 +173,24 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding-top:20px;display
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+/* 404 page */
+.notfound{display:grid;gap:24px;padding-block:72px 64px;max-width:640px}
+.notfound .crumb{margin:0}
+.nf-window{max-width:480px}
+.nf-empty{font:400 13px var(--mono);color:var(--muted);padding:40px 14px;text-align:center}
+
+/* Demo window on phones: keep name, destination and size; drop the rest so nothing scrolls sideways. */
+@media (max-width:600px){
+  .ls{min-width:0;table-layout:fixed}
+  .ls .k,.ls .date,.ls .why{display:none}
+  .ls th:first-child,.ls td:first-child{width:auto;overflow:hidden;text-overflow:ellipsis}
+  .ls .num{width:84px}
+  .ls th:nth-child(2):not(.k){width:48%}
+  .ls .dest{overflow:hidden;text-overflow:ellipsis}
+  .ls td,.ls th{padding-inline:10px}
+  .ls tr.child td:first-child{padding-left:26px}
+  .ls tr.stay td:first-child::after{display:none}
+  .win-actions{width:100%}
+  .win-actions .chip.go{margin-left:auto}
+}

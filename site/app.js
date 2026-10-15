@@ -91,26 +91,26 @@
         if (!f.on) tr.classList.add("off");
         tr.append(td, el("td", "dest", f.dest ? "→ " + f.dest : "— Leave in place —"), el("td", "why", f.why));
       } else {
-        tr.append(td, el("td", "k", f.kind), el("td", "num", f.size), el("td", "", f.date));
+        tr.append(td, el("td", "k", f.kind), el("td", "num", f.size), el("td", "date", f.date));
       }
       return tr;
     }
     const folderRow = (name, count) => {
       const tr = el("tr", "dir");
-      tr.append(nameCell(name, true), el("td", "k", "Folder"), el("td", "num", `${count} item${count === 1 ? "" : "s"}`), el("td", "", "Today"));
+      tr.append(nameCell(name, true), el("td", "k", "Folder"), el("td", "num", `${count} item${count === 1 ? "" : "s"}`), el("td", "date", "Today"));
       return tr;
     };
 
     function buildMessy() {
-      headRow([["Name"], ["Kind"], ["Size", "num"], ["Modified"]]);
+      headRow([["Name"], ["Kind", "k"], ["Size", "num"], ["Modified", "date"]]);
       return files.map(f => fileRow(f));
     }
     function buildReview() {
-      headRow([["Name"], ["Goes to"], ["Why"]]);
+      headRow([["Name"], ["Goes to"], ["Why", "why"]]);
       return files.map(f => fileRow(f, "review"));
     }
     function buildDone() {
-      headRow([["Name"], ["Kind"], ["Size", "num"], ["Modified"]]);
+      headRow([["Name"], ["Kind", "k"], ["Size", "num"], ["Modified", "date"]]);
       const groups = {};
       files.filter(f => f.on).forEach(f => (groups[f.dest] ||= []).push(f));
       const rows = [];
@@ -200,6 +200,37 @@
     btnUndo.addEventListener("click", () => { files.forEach(f => f.on = f.dest !== null); toMessy(true); btnMain.focus(); });
     btnNew.addEventListener("click", () => { if (busy) return; files = makeMess(); toMessy(false); });
     toMessy(false);
+  }
+
+  /* ---------------------------------------------------------------
+     Download button: points at the latest release's zip when there is
+     one, and says so plainly when there isn't yet. Without JavaScript
+     (or if GitHub doesn't answer) the link opens the releases page.
+  ---------------------------------------------------------------- */
+  const dlBtn = $("dl-btn"), dlNote = $("dl-note");
+  if (dlBtn && window.fetch) {
+    const REPO = "seiunhim/organizy-app";
+    fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { Accept: "application/vnd.github+json" } })
+      .then(r => {
+        if (r.status === 404) return null;                 // no release published yet
+        if (!r.ok) throw new Error(String(r.status));      // rate limit etc.: keep the default link
+        return r.json();
+      })
+      .then(rel => {
+        if (rel === null) {
+          dlBtn.textContent = "First release coming soon";
+          dlBtn.href = `https://github.com/${REPO}`;
+          dlBtn.title = "On GitHub, choose Watch → Custom → Releases to hear when it's out";
+          if (dlNote) dlNote.textContent = "watch the repo on GitHub to hear when it's out";
+          return;
+        }
+        const zip = (rel.assets || []).find(a => /^Organizy-.*\.zip$/i.test(a.name));
+        if (!zip) return;
+        dlBtn.href = zip.browser_download_url;
+        dlBtn.textContent = `Download ${rel.tag_name}`;
+        if (dlNote) dlNote.textContent = `${(zip.size / 1e6).toFixed(1)} MB · free · macOS 14 or later`;
+      })
+      .catch(() => {});
   }
 
   /* ---------------------------------------------------------------

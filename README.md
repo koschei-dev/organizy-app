@@ -1,105 +1,105 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/readme/out/hero-dark.svg">
-  <img src=".github/readme/out/hero-light.svg" width="100%" alt="Organizy. Point it at a messy folder. It suggests where every file goes, and moves nothing until you say so. Beside it, a Downloads folder whose files sort themselves into folders.">
+  <img src=".github/readme/out/hero-light.svg" width="100%" alt="Organizy, with the app icon standing in for the O. A free Mac app that reads a messy folder, suggests where every file belongs, and moves nothing until you confirm. Every move can be undone.">
 </picture>
 
-<p align="center">
+<p>
   <a href="../../releases/latest"><b>Download for macOS</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://seiunhim.github.io/organizy-app/#demo">Try the live demo</a>
   &nbsp;·&nbsp;
   <a href="https://seiunhim.github.io/organizy-app/">Website</a>
   &nbsp;·&nbsp;
   <a href="../../issues/new/choose">Report a bug</a>
-  <br>
-  <sub><code>free</code> · <code>macOS 14+</code> · <code>runs offline</code> · <code>MIT</code></sub>
 </p>
 
----
+<br>
 
-### `how-it-works/`
+<a href="https://seiunhim.github.io/organizy-app/#demo">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/readme/out/app-dark.svg">
+    <img src=".github/readme/out/app-light.svg" width="100%" alt="Organizy sorting a Downloads folder: it reads eight files, suggests a folder for each with the reason, Rule or AI, and moves them only after you click Move Files.">
+  </picture>
+</a>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/out/steps-dark.svg">
-  <img src=".github/readme/out/steps-light.svg" width="100%" alt="1. choose: pick a folder, or drop one on the Dock icon. 2. scan: Organizy reads names, types, sizes and contents. 3. review: change any destination or untick what should stay. 4. move: only ticked files move. 5. undo: every batch is in History, one click puts it back.">
-</picture>
+<sub>The website runs the same rules on a sample folder in your browser. <a href="https://seiunhim.github.io/organizy-app/#demo">Try it</a>.</sub>
 
-### `screenshots/`
-
+<details>
+<summary>A real screenshot of the app</summary>
+<br>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/readme/screens/organize-dark.webp">
   <img src=".github/readme/screens/organize-light.webp" width="100%" alt="Organizy's Organize screen: 21 files from a Downloads folder, each with a suggested folder and the reason.">
 </picture>
+</details>
 
-<sub>Rendered automatically from a sample folder on every build.</sub>
+## How it works
 
-### `features/`
+**Choose a folder,** or drop one on the window or the Dock icon. Downloads and Desktop are the usual suspects.
 
-```
-review-first.list      nothing moves until you confirm
-reads-inside.pdf       sorts by what files say: PDF, Office, text, OCR
-undo.log               every move can be reversed
-never-overwrite.rule   a taken name becomes "Report (2).pdf"
-teach.rule             fix a destination once, it remembers
-rules.json             type, name, keyword and size rules, live preview
-local-ai.model         optional Llama 3.2 via Ollama, on your Mac
-```
+**Organizy reads it.** Names, types and sizes first, then what's inside: PDFs, Office files, text, and words in images through on-device OCR.
 
-### `folders/`
+**You review.** Every file gets a suggested folder and the reason for it. Change any destination, or untick what should stay.
 
-By default, files go into folders inside `~/Documents/Organizy`. Content rules come first, so a PDF receipt lands in Invoices before it can fall into Documents.
+**Only then does anything move.** And every batch is kept in History, so one click puts it all back.
 
-```
-~/Documents/Organizy/
-├── Invoices & Receipts/   "amount due", "receipt", "factura"
-├── Bank Statements/       "opening balance", "statement period"
-├── Taxes/                 "W-2", "1099", "tax return"
-├── Resumes & CVs/         "resume" in the name, "work experience"
-├── Screenshots/           "Screenshot" in the name
-├── Images/                jpg, png, heic, raw…
-├── Videos/                mp4, mov, mkv…
-├── Audio/                 mp3, wav, m4a…
-├── Spreadsheets/          xlsx, csv, numbers…
-├── Presentations/         pptx, key…
-├── Documents/             everything else written
-├── Archives/              zip, rar, 7z…
-└── Installers/            dmg, pkg
-```
+## What it does
 
-### `install/`
+- **Asks before acting.** Nothing moves until you click Move Files.
+- **Reads inside files,** so a PDF receipt lands in Invoices, not just Documents.
+- **Never overwrites.** If a name is taken, the file becomes `Report (2).pdf`.
+- **Learns from you.** Fix a destination once and Organizy offers to remember it.
+- **Has rules you can edit,** by type, name, keyword and size, with a live preview.
+- **Can ask a local model.** Optional Llama 3.2 through Ollama, on your own Mac.
 
-1. Download `Organizy-x.y.z.zip` from [**Releases**](../../releases/latest), unzip it, and drag **Organizy** into **Applications**.
-2. Open it. macOS blocks it the first time, because Organizy is free and isn't notarized by Apple ($99/year).
-   - **macOS 15 and later:** click **Done**, open **System Settings → Privacy & Security**, scroll down and click **Open Anyway**.
-   - **macOS 14:** right-click Organizy in Applications, choose **Open**, then **Open** again.
-3. Optional: check the download. Each release lists a SHA-256, and this should print the same value:
+## Where files go
+
+By default, into folders inside Documents › Organizy. Content rules come first, so a PDF receipt lands in Invoices before it can fall into Documents. You can change all of these in Rules.
+
+| Folder | Catches |
+| :-- | :-- |
+| Invoices & Receipts | “amount due”, “receipt”, “factura” |
+| Bank Statements | “opening balance”, “statement period” |
+| Taxes | “W-2”, “1099”, “tax return” |
+| Resumes & CVs | “resume” in the name, “work experience” |
+| Screenshots | “Screenshot” in the name |
+| Images, Videos, Audio | jpg, png, heic · mp4, mov · mp3, wav, m4a |
+| Spreadsheets, Presentations | xlsx, csv, numbers · pptx, key |
+| Documents | everything else written |
+| Archives, Installers | zip, rar, 7z · dmg, pkg |
+
+## Install
+
+1. Download `Organizy-x.y.z.zip` from [Releases](../../releases/latest), unzip it, and drag Organizy into Applications.
+2. Open it. macOS blocks it the first time, because Organizy is free and isn't notarized by Apple ($99 a year).
+   - **macOS 15 and later:** click Done, open System Settings › Privacy & Security, scroll down and click Open Anyway.
+   - **macOS 14:** right-click Organizy in Applications, choose Open, then Open again.
+3. If you like, check the download. Each release lists a SHA-256, and this should print the same value:
    ```bash
    shasum -a 256 ~/Downloads/Organizy-*.zip
    ```
 
-### `local-ai/` <sub>optional</sub>
+## Local AI, if you want it
 
-Rules handle most files. For the ones they aren't sure about, Organizy can ask a small model that runs on your Mac.
+Rules handle most files. For the ones they aren't sure about, Organizy can ask a small model that runs on your Mac. Install [Ollama](https://ollama.com), then:
 
 ```bash
-# 1. install Ollama from https://ollama.com, then:
-ollama pull llama3.2      # about 2 GB, once
-# 2. in Organizy, turn on Local AI. A green dot means it's ready.
+ollama pull llama3.2    # about 2 GB, once
 ```
 
-On a mixed test folder, rules alone sorted 15 of 21 files correctly, rules plus AI 20 of 21.
+In Organizy, turn on Local AI. A green dot means it's ready. On a mixed test folder, rules alone sorted 15 of 21 files correctly; rules plus AI, 20 of 21.
 
-### `privacy/`
+## Privacy
 
 - No account, no analytics, no uploads. Organizy works offline.
 - Local AI talks only to Ollama on your own Mac (`localhost:11434`). If you point it at another machine, Settings warns you.
 - Organizy moves files and never deletes them. It only removes folders a move left empty, and Undo brings those back.
 - Rules and history are plain JSON in `~/Library/Application Support/Organizy`.
 
-### `feedback/`
+## Feedback
 
-[Open an issue](../../issues/new/choose) for bugs and ideas, or leave a review on the [website](https://seiunhim.github.io/organizy-app/#reviews). Please don't paste real file names or contents you'd rather keep private.
-
-Security issue? See [SECURITY.md](SECURITY.md).
+[Open an issue](../../issues/new/choose) for bugs and ideas, or leave a review on the [website](https://seiunhim.github.io/organizy-app/#reviews). Please don't paste real file names or contents you'd rather keep private. Found a security issue? See [SECURITY.md](SECURITY.md).
 
 ---
 
-<sub>This repository holds Organizy's releases, website and issue tracker. MIT licensed, see [LICENSE](LICENSE). README images are generated by <a href=".github/readme/build.py"><code>.github/readme/build.py</code></a>.</sub>
+<sub>This repository holds Organizy's releases, website and issue tracker. Free and open source under the MIT license, see [LICENSE](LICENSE). README images are generated by <a href=".github/readme/build.py"><code>.github/readme/build.py</code></a>; fonts are Bodoni Moda, Jost and DM Mono (SIL OFL).</sub>

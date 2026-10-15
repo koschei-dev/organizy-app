@@ -6,7 +6,7 @@ The site lives in `site/` (plain HTML, CSS and JS, no build step) and deploys to
 One-time setup:
 1. **Settings → Pages → Build and deployment → Source: GitHub Actions.**
 2. Push to `main`, or run the "Deploy website" workflow by hand. The site appears at
-   `https://giancarloguzmann-commits.github.io/organizy-app/`.
+   `https://seiunhim.github.io/organizy-app/`.
 
 Preview locally: `python3 -m http.server -d site 8000`, then open http://localhost:8000.
 

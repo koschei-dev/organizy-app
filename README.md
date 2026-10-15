@@ -6,7 +6,7 @@
 <p align="center">
   <a href="../../releases/latest"><b>Download for macOS</b></a>
   &nbsp;·&nbsp;
-  <a href="https://giancarloguzmann-commits.github.io/organizy-app/">Website</a>
+  <a href="https://seiunhim.github.io/organizy-app/">Website</a>
   &nbsp;·&nbsp;
   <a href="../../issues/new/choose">Report a bug</a>
   <br>
@@ -90,7 +90,7 @@ On a mixed test folder, rules alone sorted 15 of 21 files correctly, rules plus 
 
 ### `feedback/`
 
-[Open an issue](../../issues/new/choose) for bugs and ideas, or leave a review on the [website](https://giancarloguzmann-commits.github.io/organizy-app/#reviews). Please don't paste real file names or contents you'd rather keep private.
+[Open an issue](../../issues/new/choose) for bugs and ideas, or leave a review on the [website](https://seiunhim.github.io/organizy-app/#reviews). Please don't paste real file names or contents you'd rather keep private.
 
 Security issue? See [SECURITY.md](SECURITY.md).
 

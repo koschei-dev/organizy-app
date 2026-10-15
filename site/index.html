@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- HEAD:START -->
+<title>Organizy</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Organizy tidies any messy folder on your Mac. It reads each file, suggests where it belongs, and moves nothing until you confirm. Free, private, with undo.">
+<meta name="theme-color" content="#F6F6FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111118" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Organizy">
+<meta property="og:description" content="Tidy any messy folder on your Mac. Review every move first, undo anything. Free and private.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="icon-512.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<!-- HEAD:END -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+</head>
+<body>
+<!-- BODY:START -->
+<header class="bar">
+  <div class="wrap">
+    <a class="crumb" href="#top" aria-label="Organizy, back to top">
+      <picture>
+        <source srcset="icon-96-dark.png" media="(prefers-color-scheme: dark)">
+        <img src="icon-96.png" alt="" width="22" height="22">
+      </picture>
+      ~ / <b>organizy</b><span class="cursor" aria-hidden="true"></span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="#how">how-it-works/</a>
+      <a href="#features">features/</a>
+      <a href="#folders">folders/</a>
+      <a href="#install">install/</a>
+      <a href="#reviews">reviews/</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+  <section class="hero" aria-labelledby="h1">
+    <div class="kicker rise"><span>macOS 14+</span> Free · open source</div>
+    <h1 id="h1" class="rise d1">Organizy<em>.</em></h1>
+    <p class="lede rise d2">Point it at a messy folder. It reads every file, suggests where each one belongs, and moves nothing until you say so.</p>
+    <div class="cta rise d3">
+      <a class="btn primary" href="https://github.com/giancarloguzmann-commits/organizy-app/releases" rel="noopener">Download for macOS</a>
+      <a class="btn" href="https://github.com/giancarloguzmann-commits/organizy-app" rel="noopener">View on GitHub</a>
+    </div>
+
+    <div class="window rise d4" aria-label="Interactive demo: scan a messy Downloads folder, review the suggestions, then move the files">
+      <div class="win-head">
+        <div class="win-title"><span class="ico f" aria-hidden="true"></span><span id="win-path">~/Downloads</span></div>
+        <div class="win-actions">
+          <button class="chip" id="btn-new" type="button" title="Make a new messy folder">New mess</button>
+          <button class="chip" id="btn-undo" type="button" hidden>Undo</button>
+          <button class="chip go idle" id="btn-main" type="button">Scan</button>
+        </div>
+      </div>
+      <div class="chips" id="dest-chips" aria-label="Files per destination" hidden></div>
+      <div class="table-scroll">
+        <table class="ls">
+          <thead id="ls-head"></thead>
+          <tbody id="ls-body"></tbody>
+        </table>
+        <div class="scan" id="scan" aria-hidden="true"></div>
+      </div>
+      <div class="win-foot"><span id="win-status" aria-live="polite"></span><span>demo · random sample files</span></div>
+    </div>
+  </section>
+
+  <section class="dirsec" id="how" aria-labelledby="how-h">
+    <div class="dirhead"><h2 id="how-h">how-it-works<span class="slash">/</span></h2><span class="meta">5 steps</span></div>
+    <div class="files">
+      <div class="file"><div class="name"><span class="step">1</span> choose</div><p>Pick a folder, or drag one onto the window or the Dock icon.</p></div>
+      <div class="file"><div class="name"><span class="step">2</span> scan</div><p>Organizy reads each file's name, type, size and contents, and suggests a folder for it.</p></div>
+      <div class="file"><div class="name"><span class="step">3</span> review</div><p>Check the list. Preview any file with Space, change a destination, or untick what should stay put.</p></div>
+      <div class="file"><div class="name"><span class="step">4</span> move</div><p>Press Move Files. Only the files you left ticked move.</p></div>
+      <div class="file"><div class="name"><span class="step">5</span> undo</div><p>Every batch is saved in History. One click puts everything back.</p></div>
+    </div>
+  </section>
+
+  <section class="dirsec" id="features" aria-labelledby="features-h">
+    <div class="dirhead"><h2 id="features-h">features<span class="slash">/</span></h2><span class="meta">7 items</span></div>
+    <div class="files">
+      <div class="file"><div class="name">review-first<span class="ext">.list</span></div><p><strong>Nothing moves until you confirm.</strong> You see every suggestion before a single file changes place.</p></div>
+      <div class="file"><div class="name">reads-inside<span class="ext">.pdf</span></div><p><strong>Sorts by what files say, not just what they're called.</strong> It reads PDFs, Word, Excel, PowerPoint and text, plus text in images. A file named <code>scan_0412.pdf</code> that says "amount due" goes to Invoices.</p></div>
+      <div class="file"><div class="name">undo<span class="ext">.log</span></div><p><strong>Every move can be reversed.</strong> Undo also removes folders the move created, if they're still empty.</p></div>
+      <div class="file"><div class="name">never-overwrite<span class="ext">.rule</span></div><p><strong>Your files are moved, never deleted or replaced.</strong> If a name is taken, the new file becomes <code>Report (2).pdf</code>.</p></div>
+      <div class="file"><div class="name">teach<span class="ext">.rule</span></div><p><strong>It learns from your corrections.</strong> Change a destination and Organizy offers to remember that kind of file next time.</p></div>
+      <div class="file"><div class="name">rules<span class="ext">.json</span></div><p><strong>Rules you can read and edit.</strong> Match by file type, name, keywords or size. A live preview shows which files each rule catches.</p></div>
+      <div class="file"><div class="name">local-ai<span class="ext">.model</span></div><p><strong>Optional AI that stays on your Mac.</strong> For files the rules aren't sure about, Organizy can ask Llama 3.2 running in Ollama. Nothing goes to the cloud.</p></div>
+    </div>
+  </section>
+
+  <section class="dirsec" id="folders" aria-labelledby="folders-h">
+    <div class="dirhead"><h2 id="folders-h">folders<span class="slash">/</span></h2><span class="meta">where files go by default</span></div>
+    <div class="tree-wrap">
+      <pre class="tree" aria-label="Default destination folders inside Documents/Organizy"><span class="t-root">~/Documents/Organizy/</span>
+├── <span class="t-dir">Invoices &amp; Receipts/</span>   <span class="t-why">"amount due", "receipt", "factura"</span>
+├── <span class="t-dir">Bank Statements/</span>       <span class="t-why">"opening balance", "statement period"</span>
+├── <span class="t-dir">Taxes/</span>                 <span class="t-why">"W-2", "1099", "tax return"</span>
+├── <span class="t-dir">Resumes &amp; CVs/</span>         <span class="t-why">"resume" in the name, "work experience"</span>
+├── <span class="t-dir">Screenshots/</span>           <span class="t-why">"Screenshot" in the name</span>
+├── <span class="t-dir">Images/</span>                <span class="t-why">jpg, png, heic, raw…</span>
+├── <span class="t-dir">Videos/</span>                <span class="t-why">mp4, mov, mkv…</span>
+├── <span class="t-dir">Audio/</span>                 <span class="t-why">mp3, wav, m4a…</span>
+├── <span class="t-dir">Spreadsheets/</span>          <span class="t-why">xlsx, csv, numbers…</span>
+├── <span class="t-dir">Presentations/</span>         <span class="t-why">pptx, key…</span>
+├── <span class="t-dir">Documents/</span>             <span class="t-why">everything else written</span>
+├── <span class="t-dir">Archives/</span>              <span class="t-why">zip, rar, 7z…</span>
+└── <span class="t-dir">Installers/</span>            <span class="t-why">dmg, pkg</span></pre>
+      <p class="aside">Content rules come first, so a PDF receipt goes to Invoices before it can fall into Documents. Change any folder, add your own, or reorder them in Rules. Spanish keywords are included too.</p>
+    </div>
+  </section>
+
+  <section class="dirsec" id="screens" aria-labelledby="screens-h">
+    <div class="dirhead"><h2 id="screens-h">screenshots<span class="slash">/</span></h2><span class="meta">coming with the first release</span></div>
+    <div class="shots">
+      <figure class="shot"><div class="frame">Organize.png</div><figcaption>Review every suggestion</figcaption></figure>
+      <figure class="shot"><div class="frame">Rules.png</div><figcaption>Rules with a live preview</figcaption></figure>
+      <figure class="shot"><div class="frame">History.png</div><figcaption>Undo any batch</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="dirsec" id="install" aria-labelledby="install-h">
+    <div class="dirhead"><h2 id="install-h">install<span class="slash">/</span></h2><span class="meta">free · macOS 14 Sonoma or later</span></div>
+    <div class="files">
+      <div class="file"><div class="name"><span class="step">1</span> download</div><p>Get <code>Organizy-x.y.z.zip</code> from <a href="https://github.com/giancarloguzmann-commits/organizy-app/releases" rel="noopener">GitHub Releases</a>, unzip it, and drag Organizy into Applications.</p></div>
+      <div class="file"><div class="name"><span class="step">2</span> open</div><p>macOS blocks it the first time because Organizy is free and not notarized by Apple. Click <strong>Done</strong>, then go to <strong>System Settings → Privacy &amp; Security</strong> and click <strong>Open Anyway</strong>. On macOS 14, right-click the app and choose <strong>Open</strong> instead. You only do this once.</p></div>
+      <div class="file"><div class="name"><span class="step">3</span> verify</div><p>Optional. Each release lists a SHA-256 checksum. This command should print the same value:
+        <span class="cmd"><code id="cmd-sha">shasum -a 256 ~/Downloads/Organizy-*.zip</code><button class="copy" type="button" data-copy="cmd-sha">Copy</button></span></p></div>
+    </div>
+
+    <h3 class="subhead" id="ai">local-ai<span class="slash">/</span> <span class="meta">optional</span></h3>
+    <div class="files">
+      <div class="file"><div class="name"><span class="step">1</span> ollama</div><p>Install <a href="https://ollama.com" rel="noopener">Ollama</a>, the free app that runs AI models on your Mac.</p></div>
+      <div class="file"><div class="name"><span class="step">2</span> model</div><p>Download the model once (about 2 GB):
+        <span class="cmd"><code id="cmd-pull">ollama pull llama3.2</code><button class="copy" type="button" data-copy="cmd-pull">Copy</button></span></p></div>
+      <div class="file"><div class="name"><span class="step">3</span> switch on</div><p>Turn on <strong>Local AI</strong> in Organizy. A green dot means it's ready. Organizy starts Ollama in the background when it needs it.</p></div>
+    </div>
+  </section>
+
+  <section class="dirsec" id="reviews" aria-labelledby="reviews-h">
+    <div class="dirhead"><h2 id="reviews-h">reviews<span class="slash">/</span></h2><span class="meta" id="rev-count">loading…</span></div>
+    <div class="rev-grid">
+      <form id="rev-form" novalidate>
+        <label for="rev-name">name
+          <input id="rev-name" type="text" maxlength="40" autocomplete="nickname" placeholder="Your name or a nickname">
+        </label>
+        <fieldset class="stars">
+          <legend>rating</legend>
+          <input type="radio" name="rating" id="r1" value="1"><label for="r1">1</label>
+          <input type="radio" name="rating" id="r2" value="2"><label for="r2">2</label>
+          <input type="radio" name="rating" id="r3" value="3"><label for="r3">3</label>
+          <input type="radio" name="rating" id="r4" value="4"><label for="r4">4</label>
+          <input type="radio" name="rating" id="r5" value="5"><label for="r5">5</label>
+        </fieldset>
+        <label for="rev-text">review
+          <textarea id="rev-text" maxlength="600" placeholder="What did Organizy clean up for you? What would you change?"></textarea>
+        </label>
+        <label class="hp" for="rev-website" aria-hidden="true">website<input id="rev-website" type="text" tabindex="-1" autocomplete="off"></label>
+        <div class="form-foot">
+          <span class="note" id="rev-hint">Reviews are checked before they appear. No links, please.</span>
+          <button class="btn primary" id="rev-submit" type="submit">Submit review</button>
+        </div>
+        <div class="err" id="rev-err" role="alert" hidden></div>
+      </form>
+
+      <div class="list" id="rev-list" aria-live="polite">
+        <div class="empty" id="rev-empty"><span class="mono">reviews/ is empty</span>Organizy is new. Reviews from people who've tried it will show up here.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Organizy · MIT license</span>
+    <span class="foot-links"><a href="https://github.com/giancarloguzmann-commits/organizy-app" rel="noopener">github</a><a href="https://github.com/giancarloguzmann-commits/organizy-app/issues/new/choose" rel="noopener">report a bug</a><span>EOF</span></span>
+  </footer>
+</main>
+<script src="config.js"></script>
+<script src="app.js"></script>
+<!-- BODY:END -->
+</body>
+</html>

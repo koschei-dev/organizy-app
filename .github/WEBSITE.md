@@ -1,28 +1,51 @@
-# Website setup
+# Website
 
-The site lives in `site/` (plain HTML, CSS and JS, no build step) and deploys to GitHub Pages through
-`.github/workflows/pages.yml` on every push to `main` that changes it.
+The site lives in `web/`: Vite, React, Tailwind CSS and Motion. It deploys to GitHub Pages through
+`.github/workflows/pages.yml` on every push to `main` that changes `web/`.
 
-One-time setup:
-1. **Settings → Pages → Build and deployment → Source: GitHub Actions.**
-2. Push to `main`, or run the "Deploy website" workflow by hand. The site appears at
-   `https://seiunhim.github.io/organizy-app/`.
+```bash
+cd web
+npm install
+npm run dev       # http://localhost:5173/organizy-app/
+npm run build     # type-checks, then writes web/dist
+```
 
-Preview locally: `python3 -m http.server -d site 8000`, then open http://localhost:8000.
+## The demo
 
-The page sets a Content-Security-Policy in a `<meta>` tag: scripts and styles only from the site itself (plus Google
-Fonts), network requests only to Supabase. Keep scripts in `app.js`; inline `<script>` and `style=""` attributes are blocked.
+`web/src/demo/` is Organizy's window rebuilt in React from the app's screenshots: Organize, Rules,
+History and Settings. It runs the app's real default rules (`web/src/engine.ts`, ported from
+`RuleEngine.swift` and `DefaultRules`) on the app's sample folder (`web/src/sample-files.json`, extracted
+from `scripts/make-ai-test-folder.sh`). Rules alone sort 15 of 21 sample files correctly and rules plus
+AI 20 of 21, the same as the app's own comparison. With Local AI on, the demo uses the answers the model
+gave on that folder; there is no model in the browser.
+
+If the default rules or the sample folder change in the app, update `engine.ts` and `sample-files.json`.
+
+## Motion
+
+Components from [SmoothUI](https://smoothui.dev) (MIT) are vendored in `web/src/smoothui/`: Mask Reveal Up,
+Scroll Reveal Paragraph, Button Copy (adapted), Fluid Hover Highlight and its spring presets.
+Everything respects the visitor's reduced-motion setting.
+
+## Security headers
+
+`web/index.html` sets a Content-Security-Policy: scripts only from the site itself; network requests only to
+Supabase (reviews) and the GitHub API (latest release). Styles allow `'unsafe-inline'` because Motion
+sets some styles at runtime; scripts do not.
 
 ## Reviews
 
-Reviews are stored in Supabase (free tier). Until `site/config.js` has a URL and key, the form shows "opening soon".
+Reviews are stored in Supabase (free tier). Until `web/src/config.ts` has a URL and key, the form shows
+"Reviews open with the first release".
 
 1. Create a project at supabase.com.
 2. **SQL Editor → New query**, paste `supabase/reviews.sql`, run it.
-3. **Project Settings → API**: copy the Project URL and the `anon` public key into `site/config.js`.
+3. **Project Settings → API**: copy the Project URL and the `anon` public key into `web/src/config.ts`.
 4. To publish a review: **Table Editor → reviews**, set `approved` to `true`. Reviews start hidden.
 
 The anon key is public by design. The SQL limits it to inserting name, rating and body (always unapproved) and
-reading approved reviews. It can't read the queue, approve, edit or delete. Links are rejected by the database and
-the form, and the form has a honeypot field and a 10-minute per-browser cooldown. For heavier spam, add Cloudflare
-Turnstile verified in a Supabase Edge Function.
+reading approved reviews. It can't read the queue, approve, edit or delete.
+
+## Fonts
+
+Bodoni Moda and Jost, self-hosted subsets in `web/public/fonts/` (SIL Open Font License).

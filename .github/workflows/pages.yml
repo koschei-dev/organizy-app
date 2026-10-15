@@ -1,11 +1,11 @@
-# Publishes the site/ folder to GitHub Pages on every push to main that touches it.
+# Builds the website in web/ (Vite + React) and publishes it to GitHub Pages.
 # One-time setup: Settings → Pages → Build and deployment → Source: GitHub Actions.
 name: Deploy website
 
 on:
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/pages.yml"]
+    paths: ["web/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -23,11 +23,21 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: web
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: web/dist
       - id: deployment
         uses: actions/deploy-pages@v4

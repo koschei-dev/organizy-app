@@ -1,0 +1,11 @@
+@font-face{font-family:"Bodoni Moda";src:url(fonts/BodoniModa.woff2) format("woff2");font-weight:400 900}
+@font-face{font-family:"Jost";src:url(fonts/Jost.woff2) format("woff2");font-weight:100 900}
+:root{--bg:#F6F6FA;--ink:#16151F;--muted:#4E4C62;--accent:#5B54E0;--on:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#111118;--ink:#ECECF5;--muted:#A9A7BE;--accent:#8B95FF;--on:#111118}}
+body{margin:0;min-height:100svh;display:grid;place-items:center;background:var(--bg);color:var(--ink);font:17px/1.6 "Jost",system-ui,sans-serif}
+main{padding:24px;max-width:640px}
+.name{display:flex;align-items:baseline;font:700 clamp(56px,12vw,120px)/1 "Bodoni Moda",Georgia,serif;letter-spacing:-.04em;margin:0 0 24px}
+.name img{width:.72em;height:.72em;margin-right:.02em}
+h1{font:500 clamp(28px,3vw,40px)/1.1 "Bodoni Moda",Georgia,serif;margin:0 0 12px}
+p{margin:0 0 28px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;height:48px;padding:0 24px;background:var(--accent);color:var(--on);text-decoration:none;font-weight:500}

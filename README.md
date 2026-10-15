@@ -25,8 +25,8 @@
 ### `screenshots/`
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="site/screens/organize-dark.webp">
-  <img src="site/screens/organize-light.webp" width="100%" alt="Organizy's Organize screen: 21 files from a Downloads folder, each with a suggested folder and the reason.">
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/screens/organize-dark.webp">
+  <img src=".github/readme/screens/organize-light.webp" width="100%" alt="Organizy's Organize screen: 21 files from a Downloads folder, each with a suggested folder and the reason.">
 </picture>
 
 <sub>Rendered automatically from a sample folder on every build.</sub>

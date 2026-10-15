@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/* Site: Draft C, "the name as a monument". Mac window: tokens taken from the app's own screenshots. */
+@font-face { font-family: "Bodoni Moda"; src: url("/organizy-app/fonts/BodoniModa.woff2") format("woff2"); font-weight: 400 900; font-display: swap; }
+@font-face { font-family: "Jost"; src: url("/organizy-app/fonts/Jost.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+
+:root {
+  --bg: #F6F6FA; --surface: #EBEAF3; --surface-2: #E1DFEE; --field: #E6E4F6;
+  --ink: #16151F; --muted: #4E4C62; --accent: #5B54E0; --accent-hover: #4A43C9; --on-accent: #FFFFFF;
+  --inv-bg: #16151F; --inv-ink: #F6F6FA; --inv-muted: #B7B5CA;
+
+  --mac-window: #FFFFFF; --mac-sidebar: #EEEDF3; --mac-bar: #F7F7F9; --mac-line: #E2E2E8;
+  --mac-text: #1D1D1F; --mac-text-2: #6E6E78; --mac-alt: #F5F5F8; --mac-control: #FFFFFF;
+  --mac-control-line: #D2D2DA; --mac-tint: #6A63E8; --mac-tint-ink: #4D46D9; --mac-tint-soft: #ECEBFD;
+  --mac-select: #E4E2FB; --mac-green: #1F8A5B; --mac-orange: #C2410C; --mac-shadow: 0 30px 70px -30px rgba(40, 30, 120, 0.35);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111118; --surface: #1C1B27; --surface-2: #262435; --field: #1A1930;
+    --ink: #ECECF5; --muted: #A9A7BE; --accent: #8B95FF; --accent-hover: #A4ACFF; --on-accent: #111118;
+    --inv-bg: #ECECF5; --inv-ink: #111118; --inv-muted: #4E4C62;
+
+    --mac-window: #1E1E23; --mac-sidebar: #2A2A31; --mac-bar: #25252B; --mac-line: #36363E;
+    --mac-text: #F2F2F7; --mac-text-2: #A1A1AA; --mac-alt: #232329; --mac-control: #3A3A42;
+    --mac-control-line: #4A4A53; --mac-tint: #8B95FF; --mac-tint-ink: #AEB4FF; --mac-tint-soft: #2A2C4E;
+    --mac-select: #33355E; --mac-green: #5FD49A; --mac-orange: #F59E5B; --mac-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8);
+    color-scheme: dark;
+  }
+}
+
+@theme {
+  --color-foreground: var(--ink);
+  --font-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --font-text: "Jost", system-ui, -apple-system, sans-serif;
+  --font-mac: -apple-system, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
+  --font-macmono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 17px/1.6 var(--font-text); letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+::selection { background: var(--accent); color: var(--on-accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* The coded app: macOS conventions, so its own lines and radii apply inside it. */
+.mac { font-family: var(--font-mac); font-size: 13px; line-height: 1.35; color: var(--mac-text); letter-spacing: 0; -webkit-font-smoothing: antialiased; }
+.mac .mono { font-family: var(--font-macmono); }
+.mac button, .mac input, .mac select { font: inherit; color: inherit; }
+.mac-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px;
+  background: var(--mac-control); border: 1px solid var(--mac-control-line); box-shadow: 0 1px 0 rgba(0,0,0,.04);
+  white-space: nowrap; cursor: default; transition: background-color .12s, transform .08s;
+}
+.mac-btn:hover:not(:disabled) { background: var(--mac-alt); }
+.mac-btn:active:not(:disabled) { transform: scale(.97); }
+.mac-btn:disabled { opacity: .45; }
+.mac-btn.primary { background: var(--mac-tint); border-color: transparent; color: #fff; }
+.mac-btn.primary:hover:not(:disabled) { filter: brightness(1.08); background: var(--mac-tint); }
+@media (prefers-color-scheme: dark) { .mac-btn.primary { color: #111118; } }
+.mac-check { appearance: none; width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--mac-control-line); background: var(--mac-control); display: inline-grid; place-items: center; flex: none; transition: background-color .12s; }
+.mac-check:checked { background: var(--mac-tint); border-color: var(--mac-tint); }
+.mac-check:checked::after { content: ""; width: 4px; height: 7px; border: solid #fff; border-width: 0 1.6px 1.6px 0; transform: translateY(-1px) rotate(45deg); }
+@media (prefers-color-scheme: dark) { .mac-check:checked::after { border-color: #111118; } }
+.mac-check:disabled { opacity: .4; }
+.mac-select {
+  appearance: none; height: 22px; padding: 0 22px 0 8px; border-radius: 6px; width: 100%;
+  border: 1px solid var(--mac-control-line); background: var(--mac-control) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='12' viewBox='0 0 8 12'%3E%3Cpath d='M1 4.5 4 1.5l3 3M1 7.5l3 3 3-3' fill='none' stroke='%23888' stroke-width='1.3'/%3E%3C/svg%3E") no-repeat right 7px center;
+  text-overflow: ellipsis; cursor: default;
+}
+.mac-input { height: 24px; padding: 0 8px; border-radius: 6px; border: 1px solid var(--mac-control-line); background: var(--mac-control); width: 100%; min-width: 0; }
+.mac-input:focus { outline: none; border-color: var(--mac-tint); box-shadow: 0 0 0 3px var(--mac-tint-soft); }
+.mac-switch { position: relative; width: 26px; height: 15px; border-radius: 99px; background: var(--mac-control-line); flex: none; transition: background-color .2s; }
+.mac-switch[aria-checked="true"] { background: var(--mac-tint); }
+.mac-switch::after { content: ""; position: absolute; top: 1.5px; left: 1.5px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .2s cubic-bezier(.2,.8,.2,1); }
+.mac-switch[aria-checked="true"]::after { transform: translateX(11px); }
+.mac-scroll { scrollbar-width: thin; scrollbar-color: var(--mac-control-line) transparent; }

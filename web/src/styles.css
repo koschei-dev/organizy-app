@@ -8,6 +8,7 @@
   --bg: #F6F6FA; --surface: #EBEAF3; --surface-2: #E1DFEE; --field: #E6E4F6;
   --ink: #16151F; --muted: #4E4C62; --accent: #5B54E0; --accent-hover: #4A43C9; --on-accent: #FFFFFF;
   --inv-bg: #16151F; --inv-ink: #F6F6FA; --inv-muted: #B7B5CA;
+  --line: #DCDAE8; --soft: #ECEBFD; --accent-ink: #4D46D9;
 
   --mac-window: #FFFFFF; --mac-sidebar: #EEEDF3; --mac-bar: #F7F7F9; --mac-line: #E2E2E8;
   --mac-text: #1D1D1F; --mac-text-2: #6E6E78; --mac-alt: #F5F5F8; --mac-control: #FFFFFF;
@@ -20,6 +21,7 @@
     --bg: #111118; --surface: #1C1B27; --surface-2: #262435; --field: #1A1930;
     --ink: #ECECF5; --muted: #A9A7BE; --accent: #8B95FF; --accent-hover: #A4ACFF; --on-accent: #111118;
     --inv-bg: #ECECF5; --inv-ink: #111118; --inv-muted: #4E4C62;
+    --line: #2C2B3C; --soft: #21233D; --accent-ink: #AEB4FF;
 
     --mac-window: #1E1E23; --mac-sidebar: #2A2A31; --mac-bar: #25252B; --mac-line: #36363E;
     --mac-text: #F2F2F7; --mac-text-2: #A1A1AA; --mac-alt: #232329; --mac-control: #3A3A42;

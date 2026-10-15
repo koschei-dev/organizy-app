@@ -49,3 +49,9 @@ reading approved reviews. It can't read the queue, approve, edit or delete.
 ## Fonts
 
 Bodoni Moda and Jost, self-hosted subsets in `web/public/fonts/` (SIL Open Font License).
+
+## Hero and flow motion
+
+- `web/src/Backdrop.tsx`: the hero's accent glow (drifts, leans toward the pointer) over a faint grid of rounded tiles. Decorative, hidden from assistive tech.
+- The hero wordmark settles back (smaller, lighter) as you scroll past, using `useScroll`.
+- `web/src/Flow.tsx`, "Files in. Folders out.": five files flow along dotted paths into the app, the plan appears, then after a confirm the files flow into folders. One geometry drives both the horizontal (desktop) and vertical (phone) layouts, and the dots ride the drawn paths with `getPointAtLength`. The loop only runs while the section is in view; with reduced motion it shows the finished state.

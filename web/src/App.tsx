@@ -1,5 +1,7 @@
-import { motion, useReducedMotion } from "motion/react";
-import { type ReactNode, useState } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { type ReactNode, useRef, useState } from "react";
+import { Backdrop } from "./Backdrop";
+import { Flow } from "./Flow";
 import { decide } from "./engine";
 import { OrganizyDemo } from "./demo/OrganizyDemo";
 import { SAMPLE } from "./demo/state";
@@ -46,8 +48,15 @@ function Button({ href, children, className = "" }: { href: string; children: Re
 function Hero() {
   const reduce = useReducedMotion();
   const dl = downloadLink(useRelease());
+  const ref = useRef<HTMLElement>(null);
+  // As the page scrolls away, the monument settles back: a little smaller, a little lighter.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
+  const lift = useTransform(scrollYProgress, [0, 1], ["0%", "-8%"]);
+  const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0.25]);
   return (
-    <header className="relative grid min-h-svh grid-rows-[auto_1fr_auto] px-[clamp(20px,2.2vw,32px)] py-6">
+    <header ref={ref} className="relative isolate grid min-h-svh grid-rows-[auto_1fr_auto] px-[clamp(20px,2.2vw,32px)] py-6">
+      <Backdrop />
       <div className="flex items-baseline justify-between gap-6 text-[15px]">
         <a href="#top" className="font-medium no-underline">
           Organizy
@@ -59,10 +68,11 @@ function Hero() {
           <a className="no-underline hover:text-[var(--accent)]" href={GH}>GitHub</a>
         </nav>
       </div>
+      <motion.div className="self-center justify-self-center" style={reduce ? undefined : { scale, y: lift, opacity: fade }}>
       <h1
         id="top"
         aria-label="Organizy"
-        className="m-0 inline-flex items-baseline self-center justify-self-center font-display text-[clamp(64px,20.5vw,380px)] leading-none font-bold tracking-[-0.04em]"
+        className="m-0 inline-flex items-baseline font-display text-[clamp(64px,20.5vw,380px)] leading-none font-bold tracking-[-0.04em]"
       >
         <motion.span
           className="mr-[0.02em] inline-block size-[0.72em] translate-y-[0.02em] overflow-hidden"
@@ -92,6 +102,7 @@ function Hero() {
           </motion.span>
         </span>
       </h1>
+      </motion.div>
       <motion.div
         className="grid items-end gap-6 md:grid-cols-12"
         initial={reduce ? false : { opacity: 0, y: 14 }}
@@ -107,6 +118,28 @@ function Hero() {
         </div>
       </motion.div>
     </header>
+  );
+}
+
+function FlowSection() {
+  return (
+    <section id="flow" className="px-[clamp(16px,2.2vw,32px)] pt-[clamp(32px,5vw,72px)] pb-[clamp(48px,6vw,96px)]">
+      <div className="mx-auto max-w-[1180px]">
+        <div className="mb-14 grid gap-6 md:grid-cols-12 md:items-end">
+          <h2 className="m-0 font-display text-[clamp(36px,4.4vw,64px)] leading-[1.02] font-medium tracking-[-0.02em] md:col-span-7">
+            <MaskRevealUp triggerOnView lines={["Files in.", "Folders out."]} />
+          </h2>
+          <Enter i={1} className="md:col-span-5">
+            <p className="m-0">
+              Organizy reads what’s inside each file, shows you the plan, and moves files only after you confirm. Then they go where they belong.
+            </p>
+          </Enter>
+        </div>
+        <Enter i={2}>
+          <Flow />
+        </Enter>
+      </div>
+    </section>
   );
 }
 
@@ -406,6 +439,7 @@ export default function App() {
   return (
     <main>
       <Hero />
+      <FlowSection />
       <Demo />
       <How />
       <Details />

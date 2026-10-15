@@ -25,13 +25,13 @@
 ### `features/`
 
 ```
-review-first.list     Nothing moves until you confirm.
-reads-inside.pdf      Sorts by what files say: PDF, Word, Excel, PowerPoint, text, and text in images.
-undo.log              Every move can be reversed.
-never-overwrite.rule  Files are moved, never deleted or replaced. A taken name becomes "Report (2).pdf".
-teach.rule            Change a destination and Organizy offers to remember that kind of file.
-rules.json            Match by type, name, keywords or size, with a live preview of what each rule catches.
-local-ai.model        Optional. Llama 3.2 through Ollama, on your Mac. Nothing goes to the cloud.
+review-first.list      nothing moves until you confirm
+reads-inside.pdf       sorts by what files say: PDF, Office, text, OCR
+undo.log               every move can be reversed
+never-overwrite.rule   a taken name becomes "Report (2).pdf"
+teach.rule             fix a destination once, it remembers
+rules.json             type, name, keyword and size rules, live preview
+local-ai.model         optional Llama 3.2 via Ollama, on your Mac
 ```
 
 ### `folders/`

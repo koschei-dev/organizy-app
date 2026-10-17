@@ -13,11 +13,8 @@ npm run build     # type-checks, then writes web/dist
 ## The demo
 
 `web/src/demo/` is Organizy's window rebuilt in React from the app's screenshots: Organize, Rules,
-History and Settings. It runs the app's real default rules (`web/src/engine.ts`, ported from
-`RuleEngine.swift` and `DefaultRules`) on the app's sample folder (`web/src/sample-files.json`, extracted
-from `scripts/make-ai-test-folder.sh`). Rules alone sort 15 of 21 sample files correctly and rules plus
-AI 20 of 21, the same as the app's own comparison. With Local AI on, the demo uses the answers the model
-gave on that folder; there is no model in the browser.
+History and Settings. The demo is being reworked to match the app's current scored rules and learning, so
+its sorting results are not final. There is no model in the browser.
 
 If the default rules or the sample folder change in the app, update `engine.ts` and `sample-files.json`.
 

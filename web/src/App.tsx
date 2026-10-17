@@ -303,25 +303,24 @@ function Details() {
           If a name is taken, the new file gets a number. Nothing is replaced or deleted.
         </Mod>
         <Mod
-          title="AI only if you ask"
+          title="It learns your folders"
           panel={
             <div className="divide-y divide-[var(--mac-line)]">
               <div className="flex items-center justify-between px-4 py-2.5">
-                <span>Use local AI (Ollama)</span>
+                <span>Learn from approved moves</span>
                 <span className="mac-switch" aria-checked="true" role="img" aria-label="On" />
               </div>
-              <div className="flex items-center justify-between px-4 py-2.5">
-                <span>Model</span>
-                <b>llama3.2</b>
+              <div className="px-4 py-2.5">
+                Always send files like <b className="mono">paella_valenciana.txt</b> to <b>Recipes</b>?
               </div>
-              <div className="flex items-center justify-between px-4 py-2.5">
-                <span>Server</span>
-                <b className="mono">http://localhost:11434</b>
+              <div className="flex items-center justify-end gap-4 px-4 py-2.5">
+                <span className="text-[var(--muted)]">Not Now</span>
+                <b>Teach Organizy…</b>
               </div>
             </div>
           }
         >
-          Off by default. When it's on, it only decides the files the rules aren't sure about, and it never leaves your Mac.
+          Point it at a folder you've already sorted and it learns from it. Fix a destination once and similar files follow. It all stays on your Mac.
         </Mod>
       </div>
     </section>
@@ -346,7 +345,6 @@ function Install() {
       <>macOS blocks it the first time because Organizy is free and not notarized by Apple. Click Done, then open System Settings › Privacy &amp; Security and click Open Anyway. On macOS 14, right-click the app and choose Open.</>,
     ],
     ["Check it, if you like.", <>Each release lists a SHA-256 checksum. This should print the same value:<Copyable cmd="shasum -a 256 ~/Downloads/Organizy-*.zip" /></>],
-    ["Add the AI, optionally.", <>Install <a href="https://ollama.com">Ollama</a>, download the model once (about 2 GB), then tick Local AI.<Copyable cmd="ollama pull llama3.2" /></>],
   ];
   return (
     <section id="install" className="px-[clamp(20px,2.2vw,32px)] py-[clamp(120px,12vw,200px)]">
@@ -372,8 +370,8 @@ function Install() {
 const QA: [string, string][] = [
   ["Is it really free?", "Yes. No account, no ads, no subscription, and the code is MIT licensed."],
   ["Will it rename my files?", "No. It only moves them. A file gets a number only when the destination already has that name."],
-  ["Does it need the internet?", "No. Everything runs on your Mac. The optional AI talks only to Ollama on localhost."],
-  ["Do I need the AI?", "No. On the sample folder, rules alone sort 15 of 21 files correctly; with local AI, 20 of 21."],
+  ["Does it need the internet?", "No. Everything runs on your Mac."],
+  ["How does it learn?", "From folders you have already sorted and from the moves you approve. Similar files then count as evidence for that rule. Nothing is downloaded and nothing leaves your Mac."],
   ["What if Undo can't put a file back?", "If something now sits at the original spot, Organizy leaves that file where it is and tells you, instead of overwriting."],
 ];
 

@@ -18,7 +18,7 @@
 <a href="https://koschei-dev.github.io/organizy-app/#demo">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset=".github/readme/out/app-dark.svg">
-    <img src=".github/readme/out/app-light.svg" width="100%" alt="Organizy sorting a Downloads folder: it reads eight files, suggests a folder for each with the reason, Rule or AI, and moves them only after you click Move Files.">
+    <img src=".github/readme/out/app-light.svg" width="100%" alt="Organizy sorting a Downloads folder: it reads eight files, suggests a folder for each with the reason, Rule or You, and moves them only after you click Move Files.">
   </picture>
 </a>
 
@@ -50,7 +50,7 @@
 - **Never overwrites.** If a name is taken, the file becomes `Report (2).pdf`.
 - **Learns from you.** Fix a destination once and Organizy offers to remember it.
 - **Has rules you can edit,** by type, name, keyword and size, with a live preview.
-- **Can ask a local model.** Optional Llama 3.2 through Ollama, on your own Mac.
+- **It learns.** Point it at a folder you've already sorted, or approve a few moves, and similar files follow. Nothing is downloaded and it all stays on your Mac.
 
 ## Where files go
 
@@ -79,20 +79,9 @@ By default, into folders inside Documents › Organizy. Content rules come first
    shasum -a 256 ~/Downloads/Organizy-*.zip
    ```
 
-## Local AI, if you want it
-
-Rules handle most files. For the ones they aren't sure about, Organizy can ask a small model that runs on your Mac. Install [Ollama](https://ollama.com), then:
-
-```bash
-ollama pull llama3.2    # about 2 GB, once
-```
-
-In Organizy, turn on Local AI. A green dot means it's ready. On a mixed test folder, rules alone sorted 15 of 21 files correctly; rules plus AI, 20 of 21.
-
 ## Privacy
 
 - No account, no analytics, no uploads. Organizy works offline.
-- Local AI talks only to Ollama on your own Mac (`localhost:11434`). If you point it at another machine, Settings warns you.
 - Organizy moves files and never deletes them. It only removes folders a move left empty, and Undo brings those back.
 - Rules and history are plain JSON in `~/Library/Application Support/Organizy`.
 

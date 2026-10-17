@@ -37,16 +37,16 @@ def hero(c):
 
 
 # ---------------------------------------------------------------- the app, sorting a folder
-# Real results from the website demo's engine (web/src/engine.ts) with Local AI on.
+# Real results from the website demo's engine (web/src/engine.ts) as the rules score them.
 ROWS = [
     ("INV-2026-0042.txt", "128 bytes", "Invoices & Receipts", "Rule"),
     ("statement_sept.txt", "139 bytes", "Bank Statements", "Rule"),
-    ("ticket_supermercado.txt", "219 bytes", "Invoices & Receipts", "AI"),
+    ("ticket_supermercado.txt", "219 bytes", "Invoices & Receipts", "You"),
     ("1099_INT_2025.txt", "99 bytes", "Taxes", "Rule"),
-    ("jsmith_experience.md", "238 bytes", "Resumes & CVs", "AI"),
+    ("jsmith_experience.md", "238 bytes", "Resumes & CVs", "Rule"),
     ("Resume_Alex_Kim.docx", "4 KB", "Resumes & CVs", "Rule"),
-    ("lease_agreement.txt", "177 bytes", "Documents", "AI"),
-    ("hotel_folio.rtf", "514 bytes", "Invoices & Receipts", "AI"),
+    ("lease_agreement.txt", "177 bytes", "Documents", "Rule"),
+    ("hotel_folio.rtf", "514 bytes", "Invoices & Receipts", "Rule"),
 ]
 LOOP = 12  # seconds
 
@@ -95,13 +95,6 @@ def window(c):
     sw = width("Scan Again", "text", 13.5) + 22
     b.append(f'<rect x="{bx - sw:.1f}" y="{ty + 10}" width="{sw:.1f}" height="24" rx="6" fill="{c["win"]}" stroke="{c["control_line"]}"/>')
     b.append(t(bx - sw / 2, ty + 27, "Scan Again", "text", 13.5, c["wtext"], "middle"))
-    lx = bx - sw - 22
-    b.append(f'<circle cx="{lx}" cy="{ty + 22}" r="4" fill="{c["ok"]}"/>')
-    b.append(t(lx - 12, ty + 27, "Local AI", "text", 14, c["wtext"], "end"))
-    cbx = lx - 12 - width("Local AI", "text", 14) - 22
-    b.append(f'<rect x="{cbx:.1f}" y="{ty + 15}" width="14" height="14" rx="4" fill="{c["tint"]}"/>'
-             f'<path transform="translate({cbx + 3.5:.1f} {ty + 18.5})" fill="none" stroke="{c["on_tint"]}" stroke-width="1.7" '
-             'stroke-linecap="round" stroke-linejoin="round" d="M0 3.6 2.4 6 7 0.8"/>')
     b.append(f'<rect x="{mx}" y="{ty + TOOL - 1}" width="{mw}" height="1" fill="{c["wline"]}"/>')
     # table header
     hy = ty + TOOL
@@ -124,9 +117,11 @@ def window(c):
         row.append(t(CS, y + 21, size, "text", 13.5, c["wtext2"]))
         row.append(f'<g class="p{i}">{t(CD, y + 21, "Not sorted yet", "text", 13.5, c["wtext2"])}</g>')
         bw = width(why, "text-m", 12) + 16
+        you = why == "You"
+        you_ink = "#FFFFFF" if int(c["ok"][1:3], 16) < 0x90 else "#0B1F16"  # legible on the ok green, light or dark
         badge = (f'<rect x="{CW - bw:.1f}" y="{y + 7}" width="{bw:.1f}" height="19" rx="9.5" '
-                 f'fill="{c["tint"] if why == "AI" else c["tint_soft"]}"/>'
-                 + t(CW - bw / 2, y + 20.5, why, "text-m", 12, c["on_tint"] if why == "AI" else c["tint_ink"], "middle"))
+                 f'fill="{c["ok"] if you else c["tint_soft"]}"/>'
+                 + t(CW - bw / 2, y + 20.5, why, "text-m", 12, you_ink if you else c["tint_ink"], "middle"))
         row.append(f'<g class="d{i}">{t(CD, y + 21, dest, "text-m", 14, c["tint_ink"])}{badge}</g>')
         b.append(f'<g class="r{i}">{"".join(row)}</g>')
         css.append(anim(f"p{i}", f"p{i}", [(0, "opacity:1"), (decided - 1.2, "opacity:1"), (decided, "opacity:0"),
@@ -168,7 +163,7 @@ def window(c):
     b.append("</g>")
     return svg(W, H, "".join(b), ["display-m", "text", "text-m", "mono"], "".join(css),
                "Organizy sorting a Downloads folder: it reads eight files, suggests a folder for each with the reason, "
-               "Rule or AI, and moves them only after you click Move Files.")
+               "Rule or You, and moves them only after you click Move Files.")
 
 
 def main():

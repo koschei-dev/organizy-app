@@ -10,13 +10,35 @@ export const easeIn = (x: number) => x * x * x;
 export const win = (v: number, a: number, b: number, e: (x: number) => number = easeOut) => e(ramp(v, a, b));
 export const pick = <A,>(portrait: boolean, land: A, port: A) => (portrait ? port : land);
 
-/* ------------------------------------------------------------------ type */
+/* ------------------------------------------------------------------ tones */
 
-type WordProps = {
-  t: T; at: number; dur: number; out?: number; outDur: number; mode: "rise" | "fall" | "left" | "right"; accent?: boolean; children: ReactNode;
+export type Tone = "ink" | "accent" | "inv";
+/** Scene colour blocks. "ink" is the default stage, "accent" a full-bleed accent, "inv" the inverted ink. */
+export const TONE: Record<Tone, { bg: string; fg: string; muted: string; key: CSSProperties; ring: string }> = {
+  ink: { bg: "var(--surface)", fg: "var(--ink)", muted: "var(--muted)", key: { color: "var(--accent)" }, ring: "var(--accent)" },
+  accent: {
+    bg: "var(--accent)", fg: "var(--on-accent)", muted: "color-mix(in oklab, var(--on-accent) 72%, transparent)",
+    key: { color: "transparent", WebkitTextStroke: "0.028em var(--on-accent)" }, ring: "var(--on-accent)",
+  },
+  inv: {
+    bg: "var(--inv-bg)", fg: "var(--inv-ink)", muted: "var(--inv-muted)",
+    key: { color: "color-mix(in oklab, var(--accent) 70%, var(--inv-ink))" }, ring: "color-mix(in oklab, var(--accent) 70%, var(--inv-ink))",
+  },
 };
 
-function Word({ t, at, dur, out, outDur, mode, accent, children }: WordProps) {
+/** Paints the scene's own background colour. */
+export function Bg({ tone }: { tone: Tone }) {
+  return <div className="absolute inset-0" style={{ background: TONE[tone].bg }} />;
+}
+
+/* ------------------------------------------------------------------ type */
+
+type Mode = "rise" | "fall" | "left" | "right";
+type WordProps = {
+  t: T; at: number; dur: number; out?: number; outDur: number; mode: Mode; accent?: boolean; keyStyle?: CSSProperties; children: ReactNode;
+};
+
+function Word({ t, at, dur, out, outDur, mode, accent, keyStyle, children }: WordProps) {
   const state = (v: number) => ({ i: win(v, at, at + dur), o: out === undefined ? 0 : win(v, out, out + outDur, easeInOut) });
   const Y = useTransform(t, (v) => {
     const { i, o } = state(v);
@@ -32,8 +54,8 @@ function Word({ t, at, dur, out, outDur, mode, accent, children }: WordProps) {
   return (
     <span className="inline-block overflow-hidden align-top" style={{ padding: "0.1em 0.07em", margin: "-0.1em -0.07em" }}>
       <motion.span
-        className={`inline-block ${accent ? "text-[var(--accent)]" : ""}`}
-        style={{ x: X, y: Y, rotate: R, transformOrigin: "0% 100%" }}
+        className="inline-block"
+        style={{ x: X, y: Y, rotate: R, transformOrigin: "0% 100%", ...(accent ? keyStyle : null) }}
       >
         {children}
       </motion.span>
@@ -46,10 +68,10 @@ function Word({ t, at, dur, out, outDur, mode, accent, children }: WordProps) {
  * `still` makes the words arrive already in place at t = 0 (for chapter-opening scenes) and settles the whole block instead.
  */
 export function Headline({
-  t, lines, size, at = -0.2, step = 0.09, dur = 0.7, out, align = "center", mode = "rise", still = false, lh = 0.98, className = "", style, slots = [],
+  t, lines, size, at = -0.2, step = 0.09, dur = 0.7, out, align = "center", mode = "rise", lineModes, tone = "ink", still = false, lh = 0.98, className = "", style, slots = [],
 }: {
   t: T; lines: string[]; size: number; slots?: ReactNode[]; at?: number; step?: number; dur?: number; out?: number; align?: "left" | "center";
-  mode?: "rise" | "fall" | "left" | "right"; still?: boolean; lh?: number; className?: string; style?: CSSProperties;
+  mode?: Mode; lineModes?: Mode[]; tone?: Tone; still?: boolean; lh?: number; className?: string; style?: CSSProperties;
 }) {
   const a0 = still ? -1.0 : at;
   const st = still ? 0.03 : step;
@@ -58,8 +80,8 @@ export function Headline({
   let k = 0;
   return (
     <motion.div
-      className={`font-display font-bold tracking-[-0.03em] text-[var(--ink)] ${className}`}
-      style={{ fontSize: size, lineHeight: lh, textAlign: align, scale, transformOrigin: align === "left" ? "0% 50%" : "50% 50%", ...style }}
+      className={`font-display font-bold tracking-[-0.03em] ${className}`}
+      style={{ fontSize: size, lineHeight: lh, textAlign: align, scale, color: TONE[tone].fg, transformOrigin: align === "left" ? "0% 50%" : "50% 50%", ...style }}
     >
       {lines.map((ln, li) => (
         <div key={li} className="whitespace-nowrap">
@@ -70,7 +92,7 @@ export function Headline({
             return (
               <Fragment key={wi}>
                 {wi > 0 ? " " : null}
-                <Word t={t} at={a0 + idx * st} dur={d} out={out === undefined ? undefined : out + idx * 0.035} outDur={0.4} mode={mode} accent={!!m}>
+                <Word t={t} at={a0 + idx * st} dur={d} out={out === undefined ? undefined : out + idx * 0.035} outDur={0.4} mode={lineModes?.[li] ?? mode} accent={!!m} keyStyle={TONE[tone].key}>
                   {sl ? <>{slots[Number(sl[1])]}{sl[2]}</> : m ? m[1] + m[2] : w}
                 </Word>
               </Fragment>
@@ -83,18 +105,18 @@ export function Headline({
 }
 
 /** A word that swaps for another at the given marks (slides up through a mask). */
-export function Swap({ t, words, marks, accent = true }: { t: T; words: string[]; marks: number[]; accent?: boolean }) {
+export function Swap({ t, words, marks, accent = true, tone = "ink" }: { t: T; words: string[]; marks: number[]; accent?: boolean; tone?: Tone }) {
   const n = useBeat(t, marks);
   return (
     <span className="relative inline-block overflow-hidden align-top" style={{ padding: "0.1em 0.07em", margin: "-0.1em -0.07em" }}>
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
           key={n}
-          className={`inline-block ${accent ? "text-[var(--accent)]" : ""}`}
+          className="inline-block"
           initial={{ y: "118%", rotate: 4 }}
           animate={{ y: "0%", rotate: 0 }}
           exit={{ y: "-118%", rotate: -3 }}
-          style={{ transformOrigin: "0% 100%" }}
+          style={{ transformOrigin: "0% 100%", ...(accent ? TONE[tone].key : null) }}
           transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
         >
           {words[n]}
@@ -176,21 +198,21 @@ const pos = (v: number, path: [number, number, number][]): [number, number] => {
 /** Position of the pointer at time v (for things that ride along with it). */
 export const pointerAt = pos;
 
-function Ring({ t, c }: { t: T; c: number }) {
+function Ring({ t, c, color }: { t: T; c: number; color: string }) {
   const S = useTransform(t, (v) => 0.4 + 2.2 * easeOut(ramp(v, c, c + 0.5)));
   const O = useTransform(t, (v) => (v < c ? 0 : 0.9 * (1 - ramp(v, c, c + 0.5))));
-  return <motion.span className="absolute rounded-full border-[3px] border-[var(--accent)]" style={{ left: -17, top: -17, width: 34, height: 34, scale: S, opacity: O }} />;
+  return <motion.span className="absolute rounded-full border-[3px]" style={{ left: -17, top: -17, width: 34, height: 34, scale: S, opacity: O, borderColor: color }} />;
 }
 
 /** The macOS arrow, following `path` = [time, x, y] waypoints and clicking at `clicks`. */
-export function Pointer({ t, path, clicks = [], off, scale = 1.25 }: { t: T; path: [number, number, number][]; clicks?: number[]; off?: number; scale?: number }) {
+export function Pointer({ t, path, clicks = [], off, scale = 1.25, tone = "ink" }: { t: T; path: [number, number, number][]; clicks?: number[]; off?: number; scale?: number; tone?: Tone }) {
   const X = useTransform(t, (v) => pos(v, path)[0]);
   const Y = useTransform(t, (v) => pos(v, path)[1]);
   const O = useTransform(t, (v) => win(v, path[0][0], path[0][0] + 0.25, (x) => x) * (off === undefined ? 1 : 1 - win(v, off, off + 0.3, (x) => x)));
   const D = useTransform(t, (v) => (clicks.some((c) => v >= c && v < c + 0.16) ? 0.88 : 1));
   return (
     <motion.div className="pointer-events-none absolute top-0 left-0" style={{ x: X, y: Y, opacity: O, zIndex: 80 }}>
-      {clicks.map((c) => <Ring key={c} t={t} c={c} />)}
+      {clicks.map((c) => <Ring key={c} t={t} c={c} color={TONE[tone].ring} />)}
       <motion.svg
         width={24 * scale} height={30 * scale} viewBox="0 0 24 30"
         style={{ position: "absolute", left: -3 * scale, top: -2 * scale, scale: D, transformOrigin: `${3 * scale}px ${2 * scale}px`, filter: "drop-shadow(0 2px 3px rgba(0,0,0,.35))" }}
@@ -213,4 +235,69 @@ export function Beat({ t, at, dur = 0.4, out, y = 10, s = 1, className = "", sty
   const Y = useTransform(I, (i) => (1 - i) * y);
   const S = useTransform(I, (i) => lerp(s, 1, i));
   return <motion.div className={className} style={{ opacity: op, y: Y, scale: S, ...style }}>{children}</motion.div>;
+}
+
+
+/* ------------------------------------------------------------------ big type */
+
+/**
+ * One giant word, letters slamming up through a mask while the whole word settles from a push-in.
+ * Sized to bleed off the canvas on purpose. `still` puts every letter in place at t = 0.
+ */
+export function Punch({ t, word, size, tone = "ink", x, y, still = true, scaleFrom = 1.28, style }: {
+  t: T; word: string; size: number; tone?: Tone; x: number; y: number; still?: boolean; scaleFrom?: number; style?: CSSProperties;
+}) {
+  const S = useTransform(t, (v) => lerp(still ? 1.1 : scaleFrom, 1, easeOut(ramp(v, 0, 0.7))) + 0.02 * ramp(v, 0.7, 2.4));
+  const L = [...word];
+  return (
+    <motion.div
+      className="font-display font-bold"
+      style={{
+        position: "absolute", left: x, top: y, translate: "-50% -50%", width: "max-content", fontSize: size, lineHeight: 0.9, letterSpacing: "-0.045em",
+        whiteSpace: "nowrap", color: TONE[tone].fg, scale: S, ...style,
+      }}
+    >
+      {L.map((c, i) => (
+        <Word key={i} t={t} at={still ? -0.9 + i * 0.03 : 0 + i * 0.06} dur={still ? 1.0 : 0.55} outDur={0.3} mode="rise">{c}</Word>
+      ))}
+    </motion.div>
+  );
+}
+
+/** A long line of type sliding sideways with the clock. */
+export function Marquee({ t, y, size, text, speed, dir = 1, x0 = 0, tone = "ink", outline = false, style }: {
+  t: T; y: number; size: number; text: string; speed: number; dir?: 1 | -1; x0?: number; tone?: Tone; outline?: boolean; style?: CSSProperties;
+}) {
+  const X = useTransform(t, (v) => x0 - dir * speed * v);
+  return (
+    <motion.div
+      className="font-display font-bold"
+      style={{
+        position: "absolute", left: 0, top: y, translate: "0 -50%", x: X, fontSize: size, lineHeight: 1, letterSpacing: "-0.04em", whiteSpace: "nowrap",
+        color: outline ? "transparent" : TONE[tone].fg, WebkitTextStroke: outline ? `0.02em ${TONE[tone].fg}` : undefined, ...style,
+      }}
+    >
+      {text}
+    </motion.div>
+  );
+}
+
+/** A rolling digit counter that goes from 0 to `to` between a and b. */
+export function Odometer({ t, to, a, b, size, color }: { t: T; to: number; a: number; b: number; size: number; color?: string }) {
+  const n = (v: number) => to * ramp(v, a, b);
+  const ones = useTransform(t, (v) => -n(v) * size);
+  const tens = useTransform(t, (v) => -clamp01(n(v) - 9) * size);
+  const col = (m: MotionValue<number>, digits: number[]) => (
+    <span className="relative inline-block overflow-hidden" style={{ height: size, width: "0.54em" }}>
+      <motion.span className="absolute inset-x-0 top-0 grid" style={{ y: m }}>
+        {digits.map((d, i) => <span key={i} style={{ height: size, lineHeight: `${size}px`, textAlign: "center" }}>{d}</span>)}
+      </motion.span>
+    </span>
+  );
+  return (
+    <span className="inline-flex font-display font-bold tabular-nums" style={{ fontSize: size, color, letterSpacing: "-0.04em" }}>
+      {col(tens, [0, 1])}
+      {col(ones, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4])}
+    </span>
+  );
 }

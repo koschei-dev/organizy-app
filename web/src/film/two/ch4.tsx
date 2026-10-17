@@ -2,7 +2,7 @@ import { ChevronDown, ChevronRight, Folder, GraduationCap, Lock, ShieldAlert } f
 import { motion, useTransform } from "motion/react";
 import { easeInOut, easeOut, ramp, useBeat, useCanvas, type SceneProps } from "../Film";
 import { AppIcon, At, Card, Dest, FileChip, FileGlyph, FolderGlyph, FOLDER, Pill, tickIcon, ZipGlyph } from "./bits";
-import { Fly, Glow, Headline, lerp, pick, Pointer, pointerAt, Typed, type T, win } from "./kit";
+import { Bg, Fly, Glow, Headline, lerp, pick, Pointer, pointerAt, Punch, TONE, Typed, type T, win } from "./kit";
 
 /* ============================================================ 6. It learns: teach bar + switch */
 
@@ -21,7 +21,6 @@ function Switch({ t, on, scale = 1.7 }: { t: T; on: number; scale?: number }) {
 
 export function SceneLearn({ t, dur }: SceneProps) {
   const { W, portrait: P } = useCanvas();
-  const out = dur - 0.45;
   const barW = pick(P, 1170, 664), barH = pick(P, 100, 218);
   const cx = W / 2, cy = pick(P, 440, 540);
   const barL = cx - barW / 2;
@@ -38,9 +37,10 @@ export function SceneLearn({ t, dur }: SceneProps) {
   const glow = useTransform(t, (v) => win(v, swClick, swClick + 0.5));
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={pick(P, 190, 170)} size={pick(P, 900, 760)} out={out} />
+      <Bg tone="inv" />
+      <Glow t={t} x={W / 2} y={pick(P, 190, 170)} size={pick(P, 900, 760)} at={-1} />
       <At x={W / 2} y={pick(P, 155, 160)} className="z-10">
-        <Headline t={t} still size={pick(P, 112, 90)} lines={["It *learns*", "your folders."]} out={out} />
+        <Headline t={t} tone="inv" lineModes={["left", "right"]} at={-0.6} step={0.05} dur={0.85} size={pick(P, 112, 90)} lines={["It *learns*", "your folders."]} />
       </At>
 
       <Fly t={t} x={cx} y={cy} at={-0.2} dur={0.7} out={teachClick + 0.25} outDur={0.45} from={{ y: 50 }} to={{ y: -60, s: 0.96 }} z={5}>
@@ -58,24 +58,23 @@ export function SceneLearn({ t, dur }: SceneProps) {
         </Card>
       </Fly>
 
-      <Fly t={t} x={cx} y={cy} at={2.1} dur={0.55} out={out} from={{ y: 40, s: 0.94 }} z={5}>
+      <Fly t={t} x={cx} y={cy} at={2.1} dur={0.55} from={{ y: 40, s: 0.94 }} z={5}>
         <Card className="relative flex items-center gap-4 px-7" style={{ width: 640, height: 112 }}>
           <motion.span className="pointer-events-none absolute -inset-1 rounded-[20px]" style={{ opacity: glow, boxShadow: "0 0 0 3px var(--accent), 0 0 40px color-mix(in oklab, var(--accent) 45%, transparent)" }} />
           <span className="text-[30px] font-medium">Learn from approved moves</span>
           <span className="ml-auto"><Switch t={t} on={swClick} /></span>
         </Card>
       </Fly>
-      <Pointer t={t} path={path} clicks={[teachClick, swClick]} off={out} />
+      <Pointer t={t} path={path} clicks={[teachClick, swClick]} tone="inv" />
     </div>
   );
 }
 
 /* ============================================================ 6. Straight to Recipes */
 
-export function SceneStraight({ t, dur }: SceneProps) {
+export function SceneStraight({ t }: SceneProps) {
   const { W, portrait: P } = useCanvas();
-  const out = dur - 0.4;
-  const cw = pick(P, 900, 664), cy = pick(P, 470, 560), L = W / 2 - cw / 2;
+  const cw = pick(P, 900, 664), cy = pick(P, 560, 610), L = W / 2 - cw / 2;
   const chipX = L + pick(P, 44, 38), destW = pick(P, 380, 200);
   const destX = L + cw - 30 - destW / 2;
   const fly = (v: number) => win(v, 0.85, 1.55, easeInOut);
@@ -86,11 +85,12 @@ export function SceneStraight({ t, dur }: SceneProps) {
   const flash = useTransform(t, (v) => Math.sin(Math.PI * win(v, 1.5, 2.1, (x) => x)));
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={pick(P, 180, 190)} size={pick(P, 900, 760)} out={out} />
-      <At x={W / 2} y={pick(P, 160, 190)} className="z-10">
-        <Headline t={t} size={pick(P, 118, 106)} lines={["Straight to", "*Recipes.*"]} out={out} at={-0.35} />
+      <Bg tone="accent" />
+      <At x={pick(P, 60, W / 2)} y={pick(P, 78, 80)} left={!P} className="z-10">
+        <Headline t={t} tone="accent" align={P ? "center" : "left"} size={pick(P, 84, 72)} lines={["Straight to"]} at={-0.4} />
       </At>
-      <Fly t={t} x={W / 2} y={cy} at={0.0} dur={0.6} out={out} from={{ y: 50 }} z={4}>
+      <Punch t={t} word="Recipes." size={pick(P, 330, 200)} tone="accent" x={W / 2} y={pick(P, 292, 335)} still={false} scaleFrom={1.12} />
+      <Fly t={t} x={W / 2} y={cy} at={0.0} dur={0.6} from={{ y: 50 }} z={4}>
         <Card className={`relative flex items-center ${P ? "px-6" : "px-8"}`} style={{ width: cw, height: 128 }}>
           <FileChip kind="txt" name="tortilla_de_patatas.txt" size={pick(P, 26, 20)} />
           <span className="ml-auto flex items-center gap-3">
@@ -105,7 +105,7 @@ export function SceneStraight({ t, dur }: SceneProps) {
       <motion.div className="absolute z-10" style={{ left: 0, top: 0, x: GX, y: GY, scale: GS, opacity: GO, translate: "-50% -50%", filter: "drop-shadow(0 8px 14px rgba(0,0,0,.2))" }}>
         <FileGlyph kind="txt" size={44} />
       </motion.div>
-      <Fly t={t} x={W / 2} y={cy + 105} at={1.6} dur={0.5} out={out} from={{ y: 16 }} z={5}>
+      <Fly t={t} x={W / 2} y={cy + 100} at={1.6} dur={0.5} from={{ y: 16 }} z={5}>
         <Pill size={pick(P, 25, 22)} icon={<GraduationCap size={26} className="text-[var(--accent)]" />}>similar to 1 file filed here (71%)</Pill>
       </Fly>
     </div>
@@ -116,7 +116,6 @@ export function SceneStraight({ t, dur }: SceneProps) {
 
 export function SceneSorted({ t, dur }: SceneProps) {
   const { W, portrait: P } = useCanvas();
-  const out = dur - 0.45;
   const treeX = pick(P, 380, W / 2), treeY = pick(P, 440, 480);
   const icoX = pick(P, 900, W / 2), icoY = pick(P, 440, 720);
   const sub = ["Invoices", "Recipes", "Taxes"];
@@ -126,11 +125,11 @@ export function SceneSorted({ t, dur }: SceneProps) {
   const ringO = useTransform(ring, (r) => (r > 0 && r < 1 ? 1 - r : 0));
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={pick(P, 170, 170)} size={pick(P, 900, 760)} out={out} />
+      <Glow t={t} x={W / 2} y={pick(P, 170, 170)} size={pick(P, 900, 760)} />
       <At x={W / 2} y={pick(P, 160, 175)} className="z-10">
-        <Headline t={t} size={pick(P, 104, 92)} lines={["Point it at a", "*sorted* folder."]} out={out} at={-0.35} />
+        <Headline t={t} mode="right" size={pick(P, 104, 92)} lines={["Point it at a", "*sorted* folder."]} at={-0.35} />
       </At>
-      <Fly t={t} x={treeX} y={treeY} at={0.0} dur={0.6} out={out} from={{ x: pick(P, -60, 0), y: pick(P, 0, 50) }} z={4}>
+      <Fly t={t} x={treeX} y={treeY} at={0.0} dur={0.6} from={{ x: pick(P, -60, 0), y: pick(P, 0, 50) }} z={4}>
         <Card className="!rounded-[18px] p-5" style={{ width: pick(P, 420, 480) }}>
           <div className="flex items-center gap-3 text-[26px] font-semibold"><FolderGlyph size={32} /> Sorted</div>
           {sub.map((s, i) => (
@@ -139,13 +138,13 @@ export function SceneSorted({ t, dur }: SceneProps) {
         </Card>
       </Fly>
       {[0, 1, 2].map((i) => <Dot key={i} t={t} i={i} x0={treeX + pick(P, 210, 0)} y0={treeY + pick(P, 0, 120)} x1={icoX} y1={icoY} />)}
-      <Fly t={t} x={icoX} y={icoY} at={0.3} dur={0.6} out={out} from={{ s: 0.6 }} z={4}>
+      <Fly t={t} x={icoX} y={icoY} at={0.3} dur={0.6} from={{ s: 0.6 }} z={4}>
         <motion.div className="relative" style={{ scale: pulse }}>
           <motion.span className="absolute inset-0 rounded-[26px] border-[3px] border-[var(--accent)]" style={{ scale: ringS, opacity: ringO }} />
           <AppIcon size={pick(P, 130, 120)} />
         </motion.div>
       </Fly>
-      <Fly t={t} x={W / 2} y={pick(P, 620, 860)} at={2.2} dur={0.5} out={out} from={{ y: 20 }} z={5}>
+      <Fly t={t} x={W / 2} y={pick(P, 620, 860)} at={2.2} dur={0.5} from={{ y: 20 }} z={5}>
         <Pill size={pick(P, 26, 24)} icon={<Lock size={26} className="text-[var(--accent)]" />}>It all stays on your Mac</Pill>
       </Fly>
     </div>
@@ -175,18 +174,18 @@ function Dot({ t, i, x0, y0, x1, y1 }: { t: T; i: number; x0: number; y0: number
 
 export function SceneInstall({ t, dur }: SceneProps) {
   const { W, portrait: P } = useCanvas();
-  const out = dur - 0.4;
   const facts: [string, number, number][] = pick(P,
     [["Free", 450, 470], ["macOS 14 Sonoma or later", 790, 470], ["No account", 330, 550], ["No ads", 560, 550], ["Nothing leaves your Mac", 880, 550]],
     [["Free", 360, 530], ["macOS 14 Sonoma or later", 360, 612], ["No account", 360, 694], ["No ads", 360, 776], ["Nothing leaves your Mac", 360, 858]]);
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={pick(P, 250, 260)} size={pick(P, 980, 800)} out={out} />
+      <Bg tone="inv" />
+      <Glow t={t} x={W / 2} y={pick(P, 250, 260)} size={pick(P, 980, 800)} at={-1} />
       <At x={W / 2} y={pick(P, 245, 260)} className="z-10">
-        <Headline t={t} still size={pick(P, 140, 120)} lines={["Install in", "a *minute.*"]} out={out} />
+        <Headline t={t} still tone="inv" size={pick(P, 140, 120)} lines={["Install in", "a *minute.*"]} />
       </At>
       {facts.map(([n, x, y], i) => (
-        <Fly key={n} t={t} x={x} y={y} at={-0.1 + i * 0.1} dur={0.5} out={out + i * 0.03} from={{ y: 26, s: 0.92 }} z={5}>
+        <Fly key={n} t={t} x={x} y={y} at={-0.1 + i * 0.1} dur={0.5} from={{ y: 26, s: 0.92 }} z={5}>
           <Pill size={pick(P, 24, 24)} icon={tickIcon(22)}>{n}</Pill>
         </Fly>
       ))}
@@ -194,10 +193,10 @@ export function SceneInstall({ t, dur }: SceneProps) {
   );
 }
 
-function Dots({ t, n, out }: { t: T; n: number; out: number }) {
+function Dots({ t, n }: { t: T; n: number }) {
   const { W } = useCanvas();
   return (
-    <Fly t={t} x={W / 2} y={56} at={-0.3} dur={0.4} out={out} z={5}>
+    <Fly t={t} x={W / 2} y={56} at={-0.3} dur={0.4} z={5}>
       <div className="flex items-center gap-3">
         {[0, 1, 2].map((i) => (
           <span key={i} className={`h-[10px] rounded-full ${i === n ? "w-[44px] bg-[var(--accent)]" : "w-[10px] bg-[color-mix(in_oklab,var(--muted)_40%,transparent)]"}`} />
@@ -209,7 +208,6 @@ function Dots({ t, n, out }: { t: T; n: number; out: number }) {
 
 export function SceneDownload({ t, dur }: SceneProps) {
   const { W, portrait: P } = useCanvas();
-  const out = dur - 0.4;
   const zx = pick(P, 330, 170), fx = pick(P, 920, 550), y = pick(P, 480, 620);
   const rest: [number, number] = [zx, y - 40];
   const path: [number, number, number][] = [
@@ -226,18 +224,18 @@ export function SceneDownload({ t, dur }: SceneProps) {
   const bounce = useTransform(t, (v) => 1 + 0.12 * Math.sin(Math.PI * win(v, 2.1, 2.5, (x) => x)));
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={pick(P, 220, 260)} size={pick(P, 900, 760)} out={out} />
-      <Dots t={t} n={0} out={out} />
+      <Glow t={t} x={W / 2} y={pick(P, 220, 260)} size={pick(P, 900, 760)} />
+      <Dots t={t} n={0} />
       <At x={W / 2} y={pick(P, 190, 215)} className="z-10">
-        <Headline t={t} size={pick(P, 130, 118)} lines={pick(P, ["*Download* it."], ["*Download*", "it."])} out={out} at={-0.35} />
+        <Headline t={t} size={pick(P, 130, 118)} lines={pick(P, ["*Download* it."], ["*Download*", "it."])} at={-0.35} />
       </At>
-      <Fly t={t} x={zx} y={y - 110} at={0.0} dur={0.5} out={out} from={{ y: 20 }} z={5}>
+      <Fly t={t} x={zx} y={y - 110} at={0.0} dur={0.5} from={{ y: 20 }} z={5}>
         <Pill size={22}>GitHub</Pill>
       </Fly>
-      <Fly t={t} x={zx} y={y + 20} at={0.05} dur={0.6} out={out} from={{ y: 50 }} z={3}>
+      <Fly t={t} x={zx} y={y + 20} at={0.05} dur={0.6} from={{ y: 50 }} z={3}>
         <div style={{ filter: "drop-shadow(0 12px 18px rgba(0,0,0,.18))" }}><ZipGlyph size={84} /></div>
       </Fly>
-      <Fly t={t} x={fx} y={y} at={0.2} dur={0.6} out={out} from={{ y: 50 }} z={3}>
+      <Fly t={t} x={fx} y={y} at={0.2} dur={0.6} from={{ y: 50 }} z={3}>
         <motion.div className="grid justify-items-center gap-2" style={{ scale: bounce }}>
           <Folder size={140} strokeWidth={1.1} style={{ color: FOLDER, fill: FOLDER, filter: "drop-shadow(0 12px 18px rgba(30,60,140,.28))" }} />
           <span className="rounded-md bg-[var(--mac-select)] px-3 py-[2px] text-[24px] text-[var(--mac-text)]" style={{ fontFamily: "var(--font-mac)" }}>Applications</span>
@@ -246,7 +244,7 @@ export function SceneDownload({ t, dur }: SceneProps) {
       <motion.div className="absolute z-30" style={{ left: 0, top: 0, x: IX, y: IY, scale: IS, opacity: IO, translate: "-50% -50%", filter: "drop-shadow(0 10px 16px rgba(0,0,0,.25))" }}>
         <AppIcon size={96} />
       </motion.div>
-      <Pointer t={t} path={path} clicks={[1.2]} off={out} />
+      <Pointer t={t} path={path} clicks={[1.2]} />
     </div>
   );
 }
@@ -255,7 +253,6 @@ export function SceneDownload({ t, dur }: SceneProps) {
 
 export function SceneOpen({ t, dur }: SceneProps) {
   const { W, portrait: P } = useCanvas();
-  const out = dur - 0.4;
   const crumbs = ["System Settings", "Privacy & Security", "Open Anyway"];
   const pos = (i: number): [number, number] => pick(P, [[W / 2 - 310, 440], [W / 2 + 0, 440], [W / 2 + 290, 440]][i] as [number, number], [W / 2, 420 + i * 92] as [number, number]);
   const clickT = 2.0;
@@ -268,13 +265,14 @@ export function SceneOpen({ t, dur }: SceneProps) {
   const press = useTransform(t, (v) => 1 - 0.06 * Math.sin(Math.PI * win(v, clickT, clickT + 0.2, (x) => x)));
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={pick(P, 220, 260)} size={pick(P, 900, 760)} out={out} />
-      <Dots t={t} n={1} out={out} />
+      <Bg tone="inv" />
+      <Glow t={t} x={W / 2} y={pick(P, 220, 260)} size={pick(P, 900, 760)} at={-1} />
+      <Dots t={t} n={1} />
       <At x={W / 2} y={pick(P, 190, 215)} className="z-10">
-        <Headline t={t} size={pick(P, 130, 118)} lines={pick(P, ["*Open* it once."], ["*Open*", "it once."])} out={out} at={-0.35} />
+        <Headline t={t} tone="inv" size={pick(P, 130, 118)} lines={pick(P, ["*Open* it once."], ["*Open*", "it once."])} at={-0.35} />
       </At>
       {crumbs.map((c, i) => (
-        <Fly key={c} t={t} x={pos(i)[0]} y={pos(i)[1]} at={0.05 + i * 0.35} dur={0.5} out={out} from={{ y: 26, s: 0.92 }} z={5}>
+        <Fly key={c} t={t} x={pos(i)[0]} y={pos(i)[1]} at={0.05 + i * 0.35} dur={0.5} from={{ y: 26, s: 0.92 }} z={5}>
           {i < 2 ? (
             <span className="relative">
               <Pill size={pick(P, 24, 24)} className="justify-center" >{c}</Pill>
@@ -291,30 +289,29 @@ export function SceneOpen({ t, dur }: SceneProps) {
           )}
         </Fly>
       ))}
-      <Fly t={t} x={W / 2} y={pick(P, 560, 760)} at={0.6} dur={0.55} out={out} from={{ y: 24 }} z={4}>
+      <Fly t={t} x={W / 2} y={pick(P, 560, 760)} at={0.6} dur={0.55} from={{ y: 24 }} z={4}>
         <Card className="flex items-center gap-4 !rounded-[18px] px-6 py-4" style={{ width: pick(P, 760, 620) }}>
           <ShieldAlert size={36} className="flex-none text-[var(--mac-orange)]" />
           <span className="text-[24px] leading-[1.3]">macOS blocks it the first time, because it isn’t notarized.</span>
         </Card>
       </Fly>
-      <Pointer t={t} path={path} clicks={[clickT]} off={out} />
+      <Pointer t={t} path={path} clicks={[clickT]} tone="inv" />
     </div>
   );
 }
 
 export function SceneCheck({ t, dur }: SceneProps) {
   const { W, portrait: P } = useCanvas();
-  const out = dur - 0.4;
   const cmd = "shasum -a 256 ~/Downloads/Organizy-*.zip";
   const bar = useTransform(t, (v) => win(v, 1.85, 2.2));
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={pick(P, 220, 240)} size={pick(P, 900, 760)} out={out} />
-      <Dots t={t} n={2} out={out} />
+      <Glow t={t} x={W / 2} y={pick(P, 220, 240)} size={pick(P, 900, 760)} />
+      <Dots t={t} n={2} />
       <At x={W / 2} y={pick(P, 195, 225)} className="z-10">
-        <Headline t={t} size={pick(P, 116, 96)} lines={["*Check* it", "if you like."]} out={out} at={-0.35} />
+        <Headline t={t} size={pick(P, 116, 96)} lines={["*Check* it", "if you like."]} at={-0.35} />
       </At>
-      <Fly t={t} x={W / 2} y={pick(P, 510, 590)} at={0.05} dur={0.6} out={out} from={{ y: 50 }} z={4}>
+      <Fly t={t} x={W / 2} y={pick(P, 510, 590)} at={0.05} dur={0.6} from={{ y: 50 }} z={4}>
         <div className="rounded-[18px] p-6" style={{ width: pick(P, 900, 664), background: "var(--inv-bg)", color: "var(--inv-ink)", boxShadow: "var(--mac-shadow)" }}>
           <div className="mb-4 flex gap-2"><i className="size-3 rounded-full bg-[#FF5F57]" /><i className="size-3 rounded-full bg-[#FEBC2E]" /><i className="size-3 rounded-full bg-[#28C840]" /></div>
           <div className="mono whitespace-nowrap" style={{ fontFamily: "var(--font-macmono)", fontSize: pick(P, 24, 21) }}>
@@ -326,7 +323,7 @@ export function SceneCheck({ t, dur }: SceneProps) {
           </motion.div>
         </div>
       </Fly>
-      <Fly t={t} x={W / 2} y={pick(P, 660, 790)} at={2.1} dur={0.5} out={out} from={{ y: 20 }} z={5}>
+      <Fly t={t} x={W / 2} y={pick(P, 660, 790)} at={2.1} dur={0.5} from={{ y: 20 }} z={5}>
         <Pill size={pick(P, 25, 23)} icon={tickIcon(22)}>Each release lists a SHA-256</Pill>
       </Fly>
     </div>
@@ -343,9 +340,9 @@ export function SceneWordmark({ t }: SceneProps) {
   const drift = useTransform(t, (v) => 1 + 0.025 * ramp(v, 0, 3.2));
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={pick(P, H / 2 - 20, H / 2 - 20)} size={pick(P, 1100, 820)} at={-1.2} />
+      <Bg tone="accent" />
       <At x={W / 2} y={pick(P, H / 2 - 20, H / 2 - 20)} className="z-10">
-        <motion.h2 aria-hidden className="m-0 inline-flex items-baseline font-display font-bold tracking-[-0.04em] leading-none text-[var(--ink)]" style={{ fontSize: fs, scale: drift }}>
+        <motion.h2 aria-hidden className="m-0 inline-flex items-baseline font-display font-bold tracking-[-0.04em] leading-none" style={{ fontSize: fs, scale: drift, color: TONE.accent.fg }}>
           <motion.span className="mr-[0.02em] inline-block size-[0.72em] translate-y-[0.02em] overflow-hidden" style={{ clipPath: clip }}>
             <motion.img src="/organizy-app/icon-512.png" alt="" width={512} height={512} className="size-full object-cover" style={{ scale: imgS }} />
           </motion.span>
@@ -355,7 +352,7 @@ export function SceneWordmark({ t }: SceneProps) {
         </motion.h2>
       </At>
       <Fly t={t} x={W / 2} y={pick(P, H / 2 + 190, H / 2 + 150)} at={-0.2} dur={0.6} from={{ y: 16 }} z={5}>
-        <span className="text-[var(--muted)]" style={{ fontSize: pick(P, 30, 26) }}>Free for macOS 14 Sonoma or later.</span>
+        <span style={{ fontSize: pick(P, 30, 26), color: TONE.accent.muted }}>Free for macOS 14 Sonoma or later.</span>
       </Fly>
     </div>
   );

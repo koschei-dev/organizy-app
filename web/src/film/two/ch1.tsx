@@ -2,7 +2,7 @@ import { ArrowRight, Calendar, Compass, Folder, Mail, Music } from "lucide-react
 import { motion, useTransform } from "motion/react";
 import { easeInOut, ramp, useBeat, useCanvas, type SceneProps } from "../Film";
 import { AppIcon, At, Card, Dest, FileGlyph, FolderGlyph, FOLDER } from "./bits";
-import { easeIn, Fly, Glow, Headline, lerp, pick, Pointer, Swap, type T, win } from "./kit";
+import { Bg, easeIn, Fly, Glow, Headline, lerp, Marquee, pick, Pointer, Punch, Swap, type T, win } from "./kit";
 
 /* ============================================================ 1. Messy folder: title */
 
@@ -43,15 +43,14 @@ export function SceneTitle({ t, dur }: SceneProps) {
   const { W, H, portrait: P } = useCanvas();
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={H / 2} size={pick(P, 980, 800)} out={dur - 0.5} />
-      {SWIRL.map((_, i) => <Swirler key={i} t={t} i={i} end={dur - 0.1} />)}
+      <Glow t={t} x={W / 2} y={H / 2} size={pick(P, 980, 800)} />
+      {SWIRL.map((_, i) => <Swirler key={i} t={t} i={i} end={dur} />)}
       <At x={W / 2} y={H / 2} className="z-10">
         <Headline
           t={t}
           still
           size={pick(P, 136, 104)}
           lines={pick(P, ["What happens", "to a *messy*", "folder?"], ["What", "happens to", "a *messy*", "folder?"])}
-          out={dur - 0.55}
         />
       </At>
     </div>
@@ -79,6 +78,7 @@ export function SceneDrop({ t, dur }: SceneProps) {
   const btnY = pick(P, 520, 640);
   const hy = pick(P, 165, 175);
   const grabT = 1.95, dropT = 3.0;
+  void dur;
 
   // Downloads: sits above the button, is picked up by the pointer, and sinks into the Dock icon.
   const fp = (v: number) => {
@@ -116,14 +116,14 @@ export function SceneDrop({ t, dur }: SceneProps) {
     [grabT, cx + 8, folderY + 8],
     [dropT, cx + 8, dockY - 6],
     [3.5, cx + pick(P, 190, 120), dockY - 150],
-    [dur - 0.1, cx + pick(P, 260, 160), dockY - 210],
+    [dur, cx + pick(P, 260, 160), dockY - 210],
   ];
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={cx} y={pick(P, 300, 300)} size={pick(P, 900, 760)} out={dur - 0.5} />
+      <Glow t={t} x={cx} y={pick(P, 300, 300)} size={pick(P, 900, 760)} />
       <At x={cx} y={hy} className="z-10">
-        <Headline t={t} lines={pick(P, ["{0} a folder."], ["{0}", "a folder."])} size={pick(P, 124, 124)} slots={[<Swap key="s" t={t} words={["Choose", "Drop"]} marks={[1.9]} />]} out={dur - 0.5} at={-0.4} />
+        <Headline t={t} lines={pick(P, ["{0} a folder."], ["{0}", "a folder."])} size={pick(P, 124, 124)} slots={[<Swap key="s" t={t} words={["Choose", "Drop"]} marks={[1.9]} />]} at={-0.4} />
       </At>
 
       {/* Choose Folder… */}
@@ -160,7 +160,7 @@ export function SceneDrop({ t, dur }: SceneProps) {
         </div>
       </Fly>
 
-      <Pointer t={t} path={path} clicks={[1.1]} off={dur - 0.5} />
+      <Pointer t={t} path={path} clicks={[1.1]} />
     </div>
   );
 }
@@ -182,31 +182,73 @@ function Tag({ label, active }: { label: string; active: boolean }) {
   );
 }
 
-export function SceneReads({ t, dur }: SceneProps) {
-  const { W, H, portrait: P } = useCanvas();
-  const n = useBeat(t, [0.95, 1.9, 2.85]);
-  const cardX = pick(P, 950, W / 2);
-  const cardY = pick(P, 280, 560);
-  const scan = useTransform(t, (v) => `${((((v + 0.02) % 0.95) / 0.95) * 100).toFixed(1)}%`);
-  const tagsY = pick(P, 505, 785);
-  const labels = ["Name", "Type", "Size", "Inside"];
-  const tagX = (i: number) => cardX + (i - 1.5) * pick(P, 124, 150);
+/* ============================================================ 1. Messy folder: the usual suspects (marquee) */
+
+export function SceneSuspects({ t }: SceneProps) {
+  const { W, portrait: P } = useCanvas();
+  const size = pick(P, 300, 236);
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={pick(P, 380, W / 2)} y={pick(P, 360, 220)} size={pick(P, 820, 760)} out={dur - 0.5} />
-      <At x={pick(P, 70, W / 2)} y={pick(P, H / 2, 200)} left={!P} className="z-10">
-        <Headline
-          t={t} still
-          align={P ? "center" : "left"}
-          size={pick(P, 134, 120)}
-          lines={["It reads", "{0}"]}
-          slots={[<Swap key="s" t={t} words={["names.", "types.", "sizes.", "contents."]} marks={[0.95, 1.9, 2.85]} />]}
-          out={dur - 0.5}
-        />
-      </At>
+      <Bg tone="inv" />
+      <Marquee t={t} tone="inv" y={pick(P, 195, 330)} size={size} speed={pick(P, 300, 240)} text="Downloads  Downloads  Downloads" x0={0} />
+      <Marquee t={t} tone="inv" outline y={pick(P, 520, 570)} size={size} speed={pick(P, 300, 240)} dir={-1} x0={pick(P, -1500, -1250)} text="Desktop  Desktop  Desktop  Desktop" />
+      <Fly t={t} x={W / 2} y={pick(P, 360, 450)} at={0.3} dur={0.55} from={{ s: 0.6, r: -10 }} to={{}} z={5}>
+        <span
+          className="inline-flex items-center gap-3 rounded-full px-8 font-medium whitespace-nowrap"
+          style={{ height: 76, fontSize: 34, background: "var(--bg)", color: "var(--ink)", boxShadow: "0 18px 40px -12px rgba(0,0,0,.45)", transform: "rotate(-3deg)" }}
+        >
+          <FolderGlyph size={36} /> The usual suspects
+        </span>
+      </Fly>
+    </div>
+  );
+}
 
-      <Fly t={t} x={cardX} y={cardY} at={-0.4} dur={0.9} out={dur - 0.45} from={{ x: pick(P, 80, 0), y: pick(P, 0, 60), r: 3 }} to={{ y: -40 }} z={5}>
-        <Card className="relative overflow-hidden" style={{ width: pick(P, 400, 460), height: pick(P, 270, 280) }}>
+/* ============================================================ 2. It reads: punch word */
+
+export function SceneReadPunch({ t }: SceneProps) {
+  const { W, H, portrait: P } = useCanvas();
+  const kinds = ["pdf", "doc", "txt"] as const;
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <Bg tone="accent" />
+      <Punch t={t} word="Read." size={pick(P, 470, 250)} tone="accent" x={W / 2} y={H / 2} />
+      {kinds.map((k, i) => (
+        <Fly key={k} t={t} x={pick(P, [250, 640, 1030][i], [150, 360, 570][i])} y={pick(P, [150, 600, 200][i], [200, 760, 300][i])} at={0.05 + i * 0.12} dur={0.5} from={{ y: -120, r: (i - 1) * 25 }} float={4} phase={i * 2} z={4}>
+          <div style={{ filter: "drop-shadow(0 14px 18px rgba(0,0,0,.3))" }}><FileGlyph kind={k} size={pick(P, 84, 70)} /></div>
+        </Fly>
+      ))}
+    </div>
+  );
+}
+
+/* ============================================================ 2. It reads: split screen */
+
+export function SceneReads({ t }: SceneProps) {
+  const { W, portrait: P } = useCanvas();
+  const n = useBeat(t, [0.8, 1.6, 2.4]);
+  const panelH = pick(P, 720, 470), panelW = pick(P, 640, W);
+  const cardX = pick(P, 960, W / 2);
+  const cardY = pick(P, 290, 655);
+  const scan = useTransform(t, (v) => `${((((v + 0.02) % 0.8) / 0.8) * 100).toFixed(1)}%`);
+  const tagsY = pick(P, 505, 835);
+  const labels = ["Name", "Type", "Size", "Inside"];
+  const tagX = (i: number) => cardX + (i - 1.5) * pick(P, 124, 150);
+  const slide = useTransform(t, (v) => `${-(1 - win(v, -0.9, 0.2, easeInOut)) * 100}%`);
+  const slideX = useTransform(t, (v) => `${-(1 - win(v, -0.9, 0.2, easeInOut)) * 100}%`);
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <motion.div className="absolute top-0 left-0 overflow-hidden" style={{ width: panelW, height: panelH, background: "var(--inv-bg)", x: P ? 0 : slideX, y: P ? slide : 0 }}>
+        <At x={pick(P, 56, W / 2)} y={pick(P, 360, 235)} left={!P}>
+          <Headline
+            t={t} still tone="inv" align={P ? "center" : "left"} size={pick(P, 124, 120)} lines={["It reads", "{0}"]}
+            slots={[<Swap key="s" t={t} tone="inv" words={["names.", "types.", "sizes.", "contents."]} marks={[0.8, 1.6, 2.4]} />]}
+          />
+        </At>
+      </motion.div>
+
+      <Fly t={t} x={cardX} y={cardY} at={-0.2} dur={0.8} from={{ x: pick(P, 120, 0), y: pick(P, 0, 80), r: 3 }} z={5}>
+        <Card className="relative overflow-hidden" style={{ width: pick(P, 420, 460), height: pick(P, 270, 280) }}>
           <div className="grid h-full place-items-center content-center gap-5">
             <FileGlyph kind="pdf" size={104} />
             <span className="mono text-[24px]">factura_luz_sept.pdf</span>
@@ -217,15 +259,13 @@ export function SceneReads({ t, dur }: SceneProps) {
           />
         </Card>
       </Fly>
-
       {labels.map((l, i) => (
-        <Fly key={l} t={t} x={tagX(i)} y={tagsY} at={-0.2 + i * 0.06} dur={0.5} out={dur - 0.45} from={{ y: 30, s: 0.9 }} to={{ y: -20 }} z={6}>
+        <Fly key={l} t={t} x={tagX(i)} y={tagsY} at={-0.1 + i * 0.07} dur={0.5} from={{ y: 30, s: 0.9 }} z={6}>
           <Tag label={l} active={n === i} />
         </Fly>
       ))}
-
       {["English", "Español"].map((l, i) => (
-        <Fly key={l} t={t} x={cardX + (i - 0.5) * pick(P, 150, 170)} y={pick(P, 590, 868)} at={2.3 + i * 0.18} dur={0.5} out={dur - 0.4} from={{ y: 24, s: 0.9 }} z={6}>
+        <Fly key={l} t={t} x={cardX + (i - 0.5) * pick(P, 150, 170)} y={pick(P, 590, 910)} at={1.9 + i * 0.18} dur={0.5} from={{ y: 24, s: 0.9 }} z={6}>
           <span className="inline-flex h-[48px] items-center rounded-full border border-[var(--accent)] px-5 text-[22px] font-medium text-[var(--accent-ink)]">{l}</span>
         </Fly>
       ))}
@@ -250,7 +290,7 @@ function Reason({ text, size }: { text: string; size: number }) {
   );
 }
 
-function ReasonCard({ t, i, s, x, y, out }: { t: T; i: number; s: number; x: number; y: number; out: number }) {
+function ReasonCard({ t, i, s, x, y }: { t: T; i: number; s: number; x: number; y: number }) {
   const { portrait: P } = useCanvas();
   const row = ROWS[i];
   const w = pick(P, 960, 660), h = pick(P, 124, 196);
@@ -273,7 +313,7 @@ function ReasonCard({ t, i, s, x, y, out }: { t: T; i: number; s: number; x: num
     </div>
   );
   return (
-    <Fly t={t} x={x} y={y} at={s} dur={0.55} out={out} from={{ y: 50, s: 0.96 }} to={{ y: -30 }} z={5}>
+    <Fly t={t} x={x} y={y} at={s} dur={0.65} from={{ x: (i % 2 ? 1 : -1) * pick(P, 420, 260), y: 20, s: 0.96 }} z={5}>
       <Card className="relative overflow-hidden" style={{ width: w, height: h }}>
         <motion.div className="pointer-events-none absolute inset-y-0 w-[34%] -skew-x-12" style={{ left: band, opacity: bandO, background: "color-mix(in oklab, var(--accent) 16%, transparent)" }} />
         {P ? (
@@ -307,18 +347,17 @@ function Beatish({ t, at, children }: { t: T; at: number; children: React.ReactN
   return <motion.div style={{ opacity: I, y: Y }}>{children}</motion.div>;
 }
 
-export function SceneReasons({ t, dur }: SceneProps) {
+export function SceneReasons({ t }: SceneProps) {
   const { W, portrait: P } = useCanvas();
-  const out = dur - 0.45;
   const gap = pick(P, 138, 206);
   const y0 = pick(P, 275, 392);
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={pick(P, 110, 150)} size={pick(P, 760, 700)} out={out} />
+      <Glow t={t} x={W / 2} y={pick(P, 110, 150)} size={pick(P, 760, 700)} />
       <At x={W / 2} y={pick(P, 105, 122)} className="z-10">
-        <Headline t={t} size={pick(P, 88, 100)} lines={pick(P, ["A *reason* for each."], ["A *reason*", "for each."])} out={out} />
+        <Headline t={t} mode="left" size={pick(P, 88, 100)} lines={pick(P, ["A *reason* for each."], ["A *reason*", "for each."])} />
       </At>
-      {ROWS.map((_, i) => <ReasonCard key={i} t={t} i={i} s={0.15 + i * 1.75} x={W / 2} y={y0 + i * gap} out={out} />)}
+      {ROWS.map((_, i) => <ReasonCard key={i} t={t} i={i} s={0.15 + i * 1.5} x={W / 2} y={y0 + i * gap} />)}
     </div>
   );
 }

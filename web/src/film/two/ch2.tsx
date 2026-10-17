@@ -2,7 +2,25 @@ import { Check, CheckCircle2, Eye, History } from "lucide-react";
 import { motion, useTransform } from "motion/react";
 import { easeInOut, easeOut, useBeat, useCanvas, type SceneProps } from "../Film";
 import { At, Card, Dest, FileChip, FileGlyph, Tick } from "./bits";
-import { Fly, Glow, Headline, lerp, pick, Pointer, type T, win } from "./kit";
+import { Bg, Fly, Glow, Headline, lerp, pick, Pointer, Punch, TONE, type T, win } from "./kit";
+
+/* ============================================================ 3. You review: punch word */
+
+export function SceneReviewPunch({ t }: SceneProps) {
+  const { W, H, portrait: P } = useCanvas();
+  const ticks = [0, 1, 2, 3];
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <Bg tone="inv" />
+      <Punch t={t} word="Review." size={pick(P, 350, 176)} tone="inv" x={W / 2} y={pick(P, H / 2 - 30, H / 2 - 40)} />
+      <Fly t={t} x={W / 2} y={pick(P, 610, 790)} at={0.05} dur={0.5} from={{ y: 60 }} z={5}>
+        <Card className="flex items-center gap-6 !rounded-[18px] px-8" style={{ height: 96 }}>
+          {ticks.map((i) => <Tick key={i} t={t} size={48} off={i === 3 ? 0.75 : undefined} />)}
+        </Card>
+      </Fly>
+    </div>
+  );
+}
 
 /* ============================================================ 3. You review: the list */
 
@@ -24,7 +42,7 @@ export function SceneReview({ t, dur }: SceneProps) {
   const rowY = (i: number) => Tp + pad + rowH * i + rowH / 2;
   const selX = L + selL + sw / 2;
   const chkX = L + 42;
-  const out = dur - 0.45;
+  const out = dur + 9;
   const n = useBeat(t, [3.8]);
   const menuTop = rowY(3) + 25 + 6;
   const menuO = useTransform(t, (v) => win(v, 2.62, 2.78, (x) => x) * (1 - win(v, 3.82, 3.98, (x) => x)));
@@ -38,13 +56,13 @@ export function SceneReview({ t, dur }: SceneProps) {
     [2.5, selX - 40, rowY(3)],
     [3.35, selX - 20, menuTop + 125],
     [3.8, selX - 20, menuTop + 125],
-    [out, selX + 60, menuTop + 190],
+    [dur - 0.1, selX + 60, menuTop + 190],
   ];
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={pick(P, 300, W / 2)} y={pick(P, 360, 220)} size={pick(P, 800, 760)} out={out} />
+      <Glow t={t} x={pick(P, 300, W / 2)} y={pick(P, 360, 220)} size={pick(P, 800, 760)} />
       <At x={pick(P, 70, W / 2)} y={pick(P, 360, 190)} left={!P} className="z-10">
-        <Headline t={t} still align={P ? "center" : "left"} size={pick(P, 116, 94)} lines={pick(P, ["See the", "*whole*", "list."], ["See the", "*whole* list."])} out={out} />
+        <Headline t={t} still align={P ? "center" : "left"} size={pick(P, 116, 94)} lines={pick(P, ["See the", "*whole*", "list."], ["See the", "*whole* list."])} />
       </At>
 
       <Fly t={t} x={cx} y={cy} at={-0.3} dur={0.8} out={out} from={{ y: 60, r: 1.5 }} to={{ y: -40 }} z={4}>
@@ -93,7 +111,6 @@ export function SceneReview({ t, dur }: SceneProps) {
 
 export function SceneNothing({ t, dur }: SceneProps) {
   const { W, portrait: P } = useCanvas();
-  const out = dur - 0.45;
   const bx = pick(P, 880, 360), by = pick(P, 505, 820);
   const chipX = pick(P, 400, 360);
   const chipY = (i: number) => pick(P, 430 + i * 72, 540 + i * 74);
@@ -110,11 +127,12 @@ export function SceneNothing({ t, dur }: SceneProps) {
     [clickT - 0.05, bx + 20, by + 10],
     [dur - 0.2, bx + 120, by + 120],
   ];
+  void dur;
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={W / 2} y={pick(P, 220, 260)} size={pick(P, 900, 760)} out={out} />
+      <Bg tone="accent" />
       <At x={W / 2} y={pick(P, 175, 215)} className="z-10">
-        <Headline t={t} size={pick(P, 112, 100)} lines={pick(P, ["Nothing moves", "until you *click.*"], ["Nothing", "moves until", "you *click.*"])} out={out} />
+        <Headline t={t} tone="accent" size={pick(P, 112, 100)} lines={pick(P, ["Nothing moves", "until you *click.*"], ["Nothing", "moves until", "you *click.*"])} />
       </At>
 
       {["factura_luz_sept.pdf", "Alex_Kim_CV.docx", "paella_valenciana.txt"].map((nm, i) => (
@@ -125,15 +143,15 @@ export function SceneNothing({ t, dur }: SceneProps) {
         </Fly>
       ))}
 
-      <Fly t={t} x={bx} y={by} at={0.1} dur={0.6} from={{ y: 40 }} out={dur - 0.35} z={6}>
+      <Fly t={t} x={bx} y={by} at={0.1} dur={0.6} from={{ y: 40 }} z={6}>
         <motion.div className="relative" style={{ scale: press }}>
-          <motion.span className="absolute inset-0 rounded-[18px] border-[3px] border-[var(--accent)]" style={{ scale: pulseS, opacity: pulseO }} />
-          <span className="font-mac relative flex h-[84px] items-center gap-3 rounded-[18px] bg-[var(--mac-tint)] px-12 text-[32px] font-medium text-white dark:text-[#111118]" style={{ boxShadow: "0 18px 36px -14px color-mix(in oklab, var(--accent) 70%, transparent)" }}>
+          <motion.span className="absolute inset-0 rounded-[18px] border-[3px]" style={{ scale: pulseS, opacity: pulseO, borderColor: TONE.accent.ring }} />
+          <span className="font-mac relative flex h-[84px] items-center gap-3 rounded-[18px] px-12 text-[32px] font-medium" style={{ background: "var(--inv-bg)", color: "var(--inv-ink)", boxShadow: "0 18px 36px -14px rgba(0,0,0,.45)" }}>
             {n > 0 ? <><Check size={34} strokeWidth={3} /> Moved</> : "Move Files"}
           </span>
         </motion.div>
       </Fly>
-      <Pointer t={t} path={path} clicks={[clickT]} off={out} />
+      <Pointer t={t} path={path} clicks={[clickT]} tone="accent" />
     </div>
   );
 }
@@ -142,18 +160,18 @@ export function SceneNothing({ t, dur }: SceneProps) {
 
 export function SceneHistory({ t, dur }: SceneProps) {
   const { W, portrait: P } = useCanvas();
-  const out = dur - 0.45;
+  const out = dur + 9;
   const cw = pick(P, 560, 640), chh = 280;
   const cx = pick(P, 955, 360), cy = pick(P, 360, 700);
   const L = cx - cw / 2, Tp = cy - chh / 2;
   const clickT = 2.3;
   const n = useBeat(t, [clickT + 0.05]);
-  const gs = pick(P, 40, 46), gap = (cw - 56) / 8;
+  const gs = pick(P, 42, 48), gap = (cw - 56) / 7;
   const home = (i: number) => ({ x: L + 28 + gap * i + gap / 2, y: Tp + 205 });
   const targets: [number, number][] = pick(P,
-    [[130, 110], [400, 85], [610, 150], [95, 610], [340, 640], [590, 610], [1190, 105], [1190, 635]],
-    [[70, 70], [360, 55], [650, 80], [60, 430], [660, 430], [90, 900], [360, 925], [640, 900]]);
-  const rot = [-18, 12, 22, -10, 16, -24, 9, -14];
+    [[130, 110], [400, 85], [610, 150], [95, 610], [340, 640], [590, 610], [1190, 105]],
+    [[70, 70], [360, 55], [650, 80], [60, 430], [660, 430], [90, 900], [640, 900]]);
+  const rot = [-18, 12, 22, -10, 16, -24, 9];
   const btnX = L + cw - 28 - 56, btnY = Tp + 100;
   const note = useTransform(t, (v) => win(v, clickT + 0.9, clickT + 1.3));
   const noteY = useTransform(note, (p) => (1 - p) * 10);
@@ -164,9 +182,9 @@ export function SceneHistory({ t, dur }: SceneProps) {
   ];
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Glow t={t} x={pick(P, 330, W / 2)} y={pick(P, 360, 250)} size={pick(P, 800, 760)} out={out} />
+      <Glow t={t} x={pick(P, 330, W / 2)} y={pick(P, 360, 250)} size={pick(P, 800, 760)} />
       <At x={pick(P, 70, W / 2)} y={pick(P, 360, 230)} left={!P} className="z-10">
-        <Headline t={t} still align={P ? "center" : "left"} size={pick(P, 118, 120)} lines={["One click", "*back.*"]} out={out} />
+        <Headline t={t} still align={P ? "center" : "left"} size={pick(P, 118, 120)} lines={["One click", "*back.*"]} />
       </At>
 
       <Fly t={t} x={cx} y={cy} at={-0.3} dur={0.8} out={out} from={{ y: 60 }} to={{ y: -30 }} z={4}>
@@ -187,7 +205,7 @@ export function SceneHistory({ t, dur }: SceneProps) {
         </Card>
       </Fly>
 
-      {Array.from({ length: 8 }, (_, i) => (
+      {Array.from({ length: 7 }, (_, i) => (
         <Flyer key={i} t={t} i={i} from={home(i)} to={targets[i]} start={clickT + 0.05 + i * 0.05} r={rot[i]} size={gs} out={out} />
       ))}
       <Pointer t={t} path={path} clicks={[clickT]} off={out} />
@@ -195,7 +213,7 @@ export function SceneHistory({ t, dur }: SceneProps) {
   );
 }
 
-const KINDS = ["pdf", "img", "pdf", "pdf", "doc", "txt", "sheet", "img"] as const;
+const KINDS = ["pdf", "img", "doc", "txt", "pdf", "img", "doc"] as const;
 function Flyer({ t, i, from, to, start, r, size, out }: { t: T; i: number; from: { x: number; y: number }; to: [number, number]; start: number; r: number; size: number; out: number }) {
   const calc = (v: number) => {
     const p = win(v, start, start + 0.85, easeOut);

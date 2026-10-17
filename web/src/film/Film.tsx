@@ -138,11 +138,11 @@ export function Film({ scenes, label, className = "", rate = 1, chapters: showCh
               <motion.div
                 key={def.id}
                 className="absolute inset-0 overflow-hidden bg-[var(--surface)]"
-                style={{ zIndex: 2 }}
                 initial={enter.initial}
                 animate={enter.animate}
                 transition={enter.transition}
-                exit={{ zIndex: 1, transition: { duration: 0.75 } }}
+                // Keep the old scene on screen under the new one for the whole entrance.
+                exit={{ opacity: 0.99, transition: { duration: 0.75 } }}
               >
                 <SceneHost def={def} start={starts[active]} time={time} rate={rate} />
               </motion.div>

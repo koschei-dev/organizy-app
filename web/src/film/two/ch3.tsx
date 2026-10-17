@@ -176,7 +176,7 @@ export function SceneOverwrite({ t }: SceneProps) {
     <div className="absolute inset-0 overflow-hidden">
       <Bg tone="inv" />
       <Glow t={t} x={pick(P, 960, W / 2)} y={pick(P, 220, 300)} size={pick(P, 900, 760)} at={-1} />
-      <At x={pick(P, 44, W / 2)} y={pick(P, 540, 790)} left={!P} className="z-10">
+      <At x={pick(P, 44, W / 2)} y={pick(P, 540, 735)} left={!P} className="z-10">
         <Headline t={t} tone="inv" align={P ? "center" : "left"} size={pick(P, 196, 100)} lines={["Never", "*overwrites.*"]} at={-0.4} lh={0.94} />
       </At>
       <Fly t={t} x={px} y={py} at={-0.3} dur={0.6} from={{ y: -60 }} z={4}>
@@ -191,7 +191,7 @@ export function SceneOverwrite({ t }: SceneProps) {
           </Card>
         </motion.div>
       </Fly>
-      <Fly t={t} x={pick(P, 960, W / 2)} y={pick(P, 410, 590)} at={2.3} dur={0.5} from={{ y: 20 }} z={5}>
+      <Fly t={t} x={pick(P, 960, W / 2)} y={pick(P, 410, 545)} at={2.3} dur={0.5} from={{ y: 20 }} z={5}>
         <Pill size={pick(P, 23, 22)} icon={tickIcon(22)}>Nothing replaced or deleted</Pill>
       </Fly>
     </div>

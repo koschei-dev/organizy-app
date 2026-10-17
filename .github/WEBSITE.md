@@ -10,21 +10,25 @@ npm run dev       # http://localhost:5173/organizy-app/
 npm run build     # type-checks, then writes web/dist
 ```
 
-## The demo
+## The film
 
-`web/src/demo/` is a scripted screen recording of Organizy, drawn in React from the app's screenshots. Nothing in
-it is clickable. A cursor lassoes eight files on a desktop, drops them on the window, changes one destination to a
-new Recipes folder and teaches it, moves the files, then a week later drops a similar file that goes to Recipes.
+The hero is a short motion film, drawn in React and Motion (`web/src/film/`). Nothing in it is a video file.
 
-- `script.ts`: the files, the timeline (`K`, in seconds), the window geometry and the cursor path. Everything on
-  screen is derived from one time value, so the timeline is the only thing to edit when the story changes.
-- `AppWindow.tsx`: the Organize screen at a fixed 820 × 560, scaled as one piece.
-- `Player.tsx`: turns time into state, the stage, the camera, the desktop.
-- `Reel.tsx`: the section's player. It loops while on screen, has a pause button, and on screens under 720px
-  wide a camera follows the action (`PHONE_SHOTS`) so the app stays readable. Reduced motion shows the last frame.
+- `Film.tsx`: the engine. One clock drives every scene; each scene gets its own local time from 0, so it can be
+  paused and chapters can be jumped to. Scenes draw on a fixed canvas (1280 × 720, or 720 × 960 on screens under
+  720px) that is scaled to fit. Each scene can enter with a cut, fade, wipe, push, zoom or iris. Reduced motion
+  shows a still frame. Sound is off by default; the speaker button turns on synthesized clicks and whooshes
+  (`sfx.ts`, Web Audio, no audio files).
+- `intros.tsx`: the logo intro ("Messy" snaps into "Sorted.", then the wordmark).
+- `DraftTwo.tsx` and `two/`: the kinetic-type scenes. `two/kit.tsx` holds the type and motion pieces.
+- `SiteFilm.tsx`: the short cut (default, about 28 s) and the full film (about 77 s), with a toggle.
 
-Reasons shown in the demo follow the app's wording (`RuleEngine.swift`, `Learning.swift`). If the app's default
-folders or reason strings change, update `script.ts` and the Reasons card in `App.tsx`.
+Review the film with `npx vite build -c vite.film.config.ts`, then serve `web/dist-film/`:
+`film-drafts.html?t=12` freezes both cuts at 12 s, and `film-capture.html?cut=full` renders one cut full-bleed
+with no controls, for recording to a video.
+
+How it works and the details are still on the page, as text, inside "Prefer to read?" (a `<details>` element), so
+screen readers and search engines get the whole story.
 
 ## Motion
 
@@ -55,7 +59,6 @@ reading approved reviews. It can't read the queue, approve, edit or delete.
 
 Bodoni Moda and Jost, self-hosted subsets in `web/public/fonts/` (SIL Open Font License).
 
-## Hero motion
+## Hero backdrop
 
-- `web/src/Backdrop.tsx`: the hero's accent glow (drifts, leans toward the pointer) over a faint grid of rounded tiles. Decorative, hidden from assistive tech.
-- The hero wordmark settles back (smaller, lighter) as you scroll past, using `useScroll`.
+`web/src/Backdrop.tsx`: the hero's accent glow (drifts, leans toward the pointer) over a faint grid of rounded tiles. Decorative, hidden from assistive tech.

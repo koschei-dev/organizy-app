@@ -6,7 +6,7 @@
 <p>
   <a href="../../releases/latest"><b>Download for macOS</b></a>
   &nbsp;·&nbsp;
-  <a href="https://koschei-dev.github.io/organizy-app/#demo">Watch the demo</a>
+  <a href="https://koschei-dev.github.io/organizy-app/">Watch the film</a>
   &nbsp;·&nbsp;
   <a href="https://koschei-dev.github.io/organizy-app/">Website</a>
   &nbsp;·&nbsp;
@@ -15,14 +15,14 @@
 
 <br>
 
-<a href="https://koschei-dev.github.io/organizy-app/#demo">
+<a href="https://koschei-dev.github.io/organizy-app/">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset=".github/readme/out/app-dark.svg">
     <img src=".github/readme/out/app-light.svg" width="100%" alt="Organizy sorting a Downloads folder: it reads eight files, suggests a folder for each with the reason, Rule or You, and moves them only after you click Move Files.">
   </picture>
 </a>
 
-<sub>The website has a longer demo, including how Organizy learns from a correction. <a href="https://koschei-dev.github.io/organizy-app/#demo">Watch it</a>.</sub>
+<sub>The website opens with a short film of all this, including how Organizy learns from a correction. <a href="https://koschei-dev.github.io/organizy-app/">Watch it</a>.</sub>
 
 <details>
 <summary>A real screenshot of the app</summary>

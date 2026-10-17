@@ -1,4 +1,5 @@
-import { Pause, Play } from "lucide-react";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { onSfx, setSfx, sfxOn, thump, whoosh } from "./sfx";
 import {
   animate, AnimatePresence, motion, type MotionValue, useInView, useMotionValue, useMotionValueEvent, useReducedMotion, useTransform,
 } from "motion/react";
@@ -52,8 +53,10 @@ export const useCanvas = () => useContext(CanvasCtx);
  * `rate` slows the whole film down (0.8 plays every scene 25% longer) without touching scene code.
  * `chapters={false}` hides the chapter bar, for a short clip such as an intro.
  */
-export function Film({ scenes, label, className = "", rate = 1, chapters: showChapters = true, loop = true }: {
+export function Film({ scenes, label, className = "", rate = 1, chapters: showChapters = true, loop = true, bare = false }: {
   scenes: SceneDef[]; label: string; className?: string; rate?: number; chapters?: boolean; loop?: boolean;
+  /** No corners, controls or chapters: for recording the film to a video file. */
+  bare?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(1100);
@@ -81,7 +84,13 @@ export function Film({ scenes, label, className = "", rate = 1, chapters: showCh
 
   // ?t=12 freezes the film at 12 s (for reviewing frames).
   const frozen = typeof location !== "undefined" ? new URLSearchParams(location.search).get("t") : null;
-  useEffect(() => { if (frozen !== null) time.set(Number(frozen)); }, [frozen, time]);
+  useEffect(() => {
+    if (frozen === null) return;
+    time.set(Number(frozen));
+    // Review pages can step through frames with window.__filmSeek(id, seconds).
+    const w = window as unknown as { __filmSeek?: Record<string, (t: number) => void> };
+    (w.__filmSeek ??= {})[label] = (t: number) => time.set(t);
+  }, [frozen, time, label]);
 
   useEffect(() => {
     if (reduce || frozen !== null) return;
@@ -124,16 +133,32 @@ export function Film({ scenes, label, className = "", rate = 1, chapters: showCh
   const def = scenes[active];
   const enter = enterAnim(def.enter);
 
+  // Sound: off by default; each scene's entrance gets a matching effect.
+  const [sound, setSound] = useState(sfxOn());
+  useEffect(() => onSfx(setSound), []);
+  useEffect(() => {
+    if (!sound || paused || active === 0) return;
+    const e = def.enter ?? "fade";
+    if (e === "cut") thump();
+    else if (e !== "fade") whoosh(e !== "wipeDown" && e !== "zoomOut");
+  }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const togglePlay = () => {
+    if (paused && time.get() >= T - 0.05) time.set(0); // finished: play again from the start
+    setPaused((v) => !v);
+  };
+
   return (
     <div ref={ref} className={className}>
       <div
         role="img"
         aria-label={label}
-        className="relative overflow-hidden rounded-[22px] bg-[var(--surface)]"
+        className={`relative overflow-hidden bg-[var(--surface)] ${bare ? "" : "rounded-[22px]"}`}
         style={{ height: canvas.H * k }}
       >
         <CanvasCtx.Provider value={canvas}>
-          <div className="absolute top-0 left-0 origin-top-left" style={{ width: canvas.W, height: canvas.H, transform: `scale(${k})` }}>
+          {/* A sturdier Bodoni optical size: at the default (96) its hairlines vanish and "w" reads as a gap. */}
+          <div className="absolute top-0 left-0 origin-top-left" style={{ width: canvas.W, height: canvas.H, transform: `scale(${k})`, fontVariationSettings: '"opsz" 30' }}>
             <AnimatePresence initial={false}>
               <motion.div
                 key={def.id}
@@ -149,18 +174,30 @@ export function Film({ scenes, label, className = "", rate = 1, chapters: showCh
             </AnimatePresence>
           </div>
         </CanvasCtx.Provider>
-        {!reduce && (
-          <button
-            type="button"
-            onClick={() => setPaused((v) => !v)}
-            aria-label={paused ? "Play the film" : "Pause the film"}
-            className="absolute right-3 bottom-3 z-10 grid size-9 place-items-center rounded-full border border-[var(--line)] bg-[var(--bg)]/85 text-[var(--ink)] backdrop-blur transition-colors hover:border-[var(--accent)]"
-          >
-            {paused ? <Play size={15} /> : <Pause size={15} />}
-          </button>
+        {!reduce && !bare && (
+          <div className="absolute right-3 bottom-3 z-10 flex gap-2">
+            <button
+              type="button"
+              onClick={() => setSfx(!sound)}
+              aria-label={sound ? "Turn sound off" : "Turn sound on"}
+              aria-pressed={sound}
+              className="grid size-9 place-items-center rounded-full border border-[var(--line)] bg-[var(--bg)]/85 text-[var(--ink)] backdrop-blur transition-colors hover:border-[var(--accent)]"
+            >
+              {sound ? <Volume2 size={15} /> : <VolumeX size={15} />}
+            </button>
+            <button
+              type="button"
+              onClick={togglePlay}
+              aria-label={paused ? "Play the film" : "Pause the film"}
+              className="grid size-9 place-items-center rounded-full border border-[var(--line)] bg-[var(--bg)]/85 text-[var(--ink)] backdrop-blur transition-colors hover:border-[var(--accent)]"
+            >
+              {paused ? <Play size={15} /> : <Pause size={15} />}
+            </button>
+          </div>
         )}
       </div>
-      {showChapters && <ol className="m-0 mt-5 grid list-none gap-2 p-0" style={{ gridTemplateColumns: `repeat(${chapters.length}, minmax(0, 1fr))` }} aria-label="Chapters">
+      {showChapters && !bare && portrait && <p className="m-0 mt-4 text-[14px] text-[var(--ink)]" aria-hidden>{chapters.find((c) => c.from <= time.get() && time.get() < c.to)?.title ?? chapters[0].title}</p>}
+      {showChapters && !bare && <ol className={`m-0 grid list-none gap-2 p-0 ${portrait ? "mt-2" : "mt-5"}`} style={{ gridTemplateColumns: `repeat(${chapters.length}, minmax(0, 1fr))` }} aria-label="Chapters">
         {chapters.map((c) => (
           <Chapter key={c.title} time={time} {...c} active={time.get() >= c.from && time.get() < c.to} onGo={() => go(c.from)} compact={portrait} />
         ))}
@@ -181,11 +218,11 @@ function Chapter({ time, title, from, to, onGo, compact }: { time: MotionValue<n
   useMotionValueEvent(time, "change", (t) => setOn(t >= from && t < to));
   return (
     <li>
-      <button type="button" onClick={onGo} className="grid w-full gap-2 text-left" aria-current={on ? "step" : undefined}>
+      <button type="button" onClick={onGo} className={`grid w-full gap-2 text-left ${compact ? "py-2" : ""}`} aria-label={title} aria-current={on ? "step" : undefined}>
         <span className="relative h-[3px] overflow-hidden rounded-full bg-[var(--line)]">
           <motion.span className="absolute inset-y-0 left-0 rounded-full bg-[var(--accent)]" style={{ width }} />
         </span>
-        <span className={`truncate text-[13px] transition-colors ${on ? "text-[var(--ink)]" : "text-[var(--muted)]"} ${compact && !on ? "max-sm:opacity-0" : ""}`}>{title}</span>
+        <span className={`truncate text-[13px] transition-colors ${on ? "text-[var(--ink)]" : "text-[var(--muted)]"} ${compact ? "sr-only" : ""}`}>{title}</span>
       </button>
     </li>
   );

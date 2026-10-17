@@ -15,5 +15,5 @@ const relative: Plugin = {
 export default defineConfig({
   base: "./",
   plugins: [relative, react(), tailwindcss()],
-  build: { target: "es2022", assetsInlineLimit: 0, outDir: "dist-film", rollupOptions: { input: "film-drafts.html" } },
+  build: { target: "es2022", assetsInlineLimit: 0, outDir: "dist-film", rollupOptions: { input: ["film-drafts.html", "film-capture.html"] } },
 });

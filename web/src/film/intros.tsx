@@ -37,7 +37,7 @@ function Wordmark({ size, t, from, color = "var(--ink)", iconFrom }: { size: num
 }
 function Rise({ t, at, ch }: { t: MotionValue<number>; at: number; ch: string }) {
   const y = useTransform(t, (v) => `${(1 - easeOut(ramp(v, at, at + 0.55))) * 160}%`);
-  const opacity = useTransform(t, (v) => (v < at ? 0 : 1));
+  const opacity = useTransform(t, (v) => ramp(v, at + 0.05, at + 0.3));
   return <motion.span className="inline-block" style={{ y, opacity }}>{ch}</motion.span>;
 }
 
@@ -123,9 +123,9 @@ function SnapScene({ t }: SceneProps) {
   const S = portrait ? 120 : 170;
   const wipe = useTransform(t, (v) => `inset(0 ${(1 - easeInOut(ramp(v, B.wipe, B.wipe + 0.5))) * 100}% 0 0)`);
   const messyY = useTransform(t, (v) => `${-easeInOut(ramp(v, B.swap, B.swap + 0.4)) * 45}%`);
-  const messyO = useTransform(t, (v) => 1 - ramp(v, B.swap, B.swap + 0.3));
-  const sortedY = useTransform(t, (v) => `${(1 - easeOut(ramp(v, B.swap + 0.1, B.swap + 0.5))) * 45}%`);
-  const sortedO = useTransform(t, (v) => ramp(v, B.swap + 0.1, B.swap + 0.35));
+  const messyO = useTransform(t, (v) => 1 - ramp(v, B.swap, B.swap + 0.18));
+  const sortedY = useTransform(t, (v) => `${(1 - easeOut(ramp(v, B.swap + 0.2, B.swap + 0.6))) * 45}%`);
+  const sortedO = useTransform(t, (v) => ramp(v, B.swap + 0.2, B.swap + 0.4));
   const words = ["Read.", "Review.", "Move."];
   return (
     <div className="absolute inset-0">

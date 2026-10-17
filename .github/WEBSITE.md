@@ -12,16 +12,24 @@ npm run build     # type-checks, then writes web/dist
 
 ## The demo
 
-`web/src/demo/` is Organizy's window rebuilt in React from the app's screenshots: Organize, Rules,
-History and Settings. The demo is being reworked to match the app's current scored rules and learning, so
-its sorting results are not final. There is no model in the browser.
+`web/src/demo/` is a scripted screen recording of Organizy, drawn in React from the app's screenshots. Nothing in
+it is clickable. A cursor lassoes eight files on a desktop, drops them on the window, changes one destination to a
+new Recipes folder and teaches it, moves the files, then a week later drops a similar file that goes to Recipes.
 
-If the default rules or the sample folder change in the app, update `engine.ts` and `sample-files.json`.
+- `script.ts`: the files, the timeline (`K`, in seconds), the window geometry and the cursor path. Everything on
+  screen is derived from one time value, so the timeline is the only thing to edit when the story changes.
+- `AppWindow.tsx`: the Organize screen at a fixed 820 × 560, scaled as one piece.
+- `Player.tsx`: turns time into state, the stage, the camera, the desktop.
+- `Reel.tsx`: the section's player. It loops while on screen, has a pause button, and on screens under 720px
+  wide a camera follows the action (`PHONE_SHOTS`) so the app stays readable. Reduced motion shows the last frame.
+
+Reasons shown in the demo follow the app's wording (`RuleEngine.swift`, `Learning.swift`). If the app's default
+folders or reason strings change, update `script.ts` and the Reasons card in `App.tsx`.
 
 ## Motion
 
 Components from [SmoothUI](https://smoothui.dev) (MIT) are vendored in `web/src/smoothui/`: Mask Reveal Up,
-Scroll Reveal Paragraph, Button Copy (adapted), Fluid Hover Highlight and its spring presets.
+Scroll Reveal Paragraph, Button Copy (adapted) and spring presets.
 Everything respects the visitor's reduced-motion setting.
 
 ## Security headers
@@ -47,8 +55,7 @@ reading approved reviews. It can't read the queue, approve, edit or delete.
 
 Bodoni Moda and Jost, self-hosted subsets in `web/public/fonts/` (SIL Open Font License).
 
-## Hero and flow motion
+## Hero motion
 
 - `web/src/Backdrop.tsx`: the hero's accent glow (drifts, leans toward the pointer) over a faint grid of rounded tiles. Decorative, hidden from assistive tech.
 - The hero wordmark settles back (smaller, lighter) as you scroll past, using `useScroll`.
-- `web/src/Flow.tsx`, "Files in. Folders out.": five files flow along dotted paths into the app, the plan appears, then after a confirm the files flow into folders. One geometry drives both the horizontal (desktop) and vertical (phone) layouts, and the dots ride the drawn paths with `getPointAtLength`. The loop only runs while the section is in view; with reduced motion it shows the finished state.

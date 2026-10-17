@@ -24,20 +24,28 @@ export function usePlayer(time: MotionValue<number>, L: Layout, opts: { windowSt
   return { snap, cx, cy, click, down };
 }
 
-/** A fixed-size design canvas scaled to the width it is given. */
-export function Stage({ W, H, children, className = "", camera }: { W: number; H: number; children: ReactNode; className?: string; camera?: MotionValue<string> }) {
+/**
+ * A fixed-size design canvas (W × H) shown through a viewport (VW × VH design units) that is
+ * scaled to the width it is given. Without a camera the viewport is the whole canvas.
+ */
+export function Stage({
+  W, H, VW = W, VH = H, children, className = "", camera, onScale,
+}: {
+  W: number; H: number; VW?: number; VH?: number; children: ReactNode; className?: string;
+  camera?: MotionValue<string>; onScale?: (k: number) => void;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [k, setK] = useState(1);
   useLayoutEffect(() => {
     if (!ref.current) return;
-    const ro = new ResizeObserver(([e]) => setK(e.contentRect.width / W));
+    const ro = new ResizeObserver(([e]) => { setK(e.contentRect.width / VW); onScale?.(e.contentRect.width); });
     ro.observe(ref.current);
     return () => ro.disconnect();
-  }, [W]);
+  }, [VW, onScale]);
   return (
-    <div ref={ref} className={`relative w-full overflow-hidden ${className}`} style={{ height: H * k }}>
-      <div className="absolute top-0 left-0 origin-top-left" style={{ width: W, height: H, transform: `scale(${k})` }}>
-        <motion.div className="absolute inset-0 origin-top-left" style={camera ? { transform: camera } : undefined}>
+    <div ref={ref} className={`relative w-full overflow-hidden ${className}`} style={{ height: VH * k }}>
+      <div className="absolute top-0 left-0 origin-top-left" style={{ width: VW, height: VH, transform: `scale(${k})` }}>
+        <motion.div className="absolute top-0 left-0 origin-top-left" style={{ width: W, height: H, ...(camera ? { transform: camera } : {}) }}>
           {children}
         </motion.div>
       </div>
@@ -45,23 +53,26 @@ export function Stage({ W, H, children, className = "", camera }: { W: number; H
   );
 }
 
-/** Camera keyframes: [time, x0, y0, x1, y1] rectangles to fit, eased between. */
+/**
+ * Camera keyframes: [arrive-by time, x0, y0, x1, y1]. Between two shots the camera holds the first
+ * for a while, then eases to the second, so it is settled before the action it frames.
+ */
 export type Shot = [number, number, number, number, number];
-export function useCamera(time: MotionValue<number>, W: number, H: number, shots: Shot[], maxZoom = 1.9) {
+export function useCamera(time: MotionValue<number>, VW: number, VH: number, shots: Shot[] | null, maxZoom = 1.6) {
   return useTransform(time, (t) => {
+    if (!shots) return "none";
     let a = shots[0], b = shots[0];
     for (let i = 0; i < shots.length; i++) {
       if (shots[i][0] <= t) { a = shots[i]; b = shots[Math.min(i + 1, shots.length - 1)]; }
     }
     const span = b[0] - a[0];
     const raw = span > 0 ? Math.min(1, Math.max(0, (t - a[0]) / span)) : 0;
-    // hold most of the segment, then move: cameras that drift constantly feel seasick
-    const p = raw < 0.55 ? 0 : (raw - 0.55) / 0.45;
+    const p = raw < 0.45 ? 0 : (raw - 0.45) / 0.55;
     const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
     const r = [1, 2, 3, 4].map((j) => a[j] + (b[j] - a[j]) * e);
-    const s = Math.min(maxZoom, W / (r[2] - r[0]), H / (r[3] - r[1]));
+    const s = Math.min(maxZoom, VW / (r[2] - r[0]), VH / (r[3] - r[1]));
     const cx = (r[0] + r[2]) / 2, cy = (r[1] + r[3]) / 2;
-    return `translate(${W / 2 - cx * s}px, ${H / 2 - cy * s}px) scale(${s})`;
+    return `translate(${VW / 2 - cx * s}px, ${VH / 2 - cy * s}px) scale(${s})`;
   });
 }
 
@@ -129,7 +140,11 @@ export function DesktopIcons({ L, snap, sink, tilt = false }: { L: Layout; snap:
             className="absolute top-0 left-0 grid w-[104px] justify-items-center gap-1 text-center"
             initial={false}
             animate={gone ? { x: sink.x - 52, y: sink.y - 30, scale: 0.2, opacity: 0, rotate: 0 } : { x: p.x - 52, y: p.y - 30, scale: 1, opacity: 1, rotate: rot }}
-            transition={{ duration: gone ? 0.7 : 0.4, delay: gone ? i * 0.06 : 0, ease: [0.5, 0, 0.2, 1] }}
+            transition={
+              gone
+                ? { duration: 0.7, delay: i * 0.06, ease: [0.5, 0, 0.2, 1] }
+                : { x: { duration: 0 }, y: { duration: 0 }, scale: { duration: 0 }, rotate: { duration: 0 }, opacity: { duration: 0.5, delay: i * 0.04 } }
+            }
           >
             <span className={`rounded-[6px] p-1 ${sel ? "bg-black/10 dark:bg-white/15" : ""}`}>
               <FileGlyph kind={f.kind} size={42} />
@@ -173,5 +188,3 @@ export function Wallpaper({ children, rounded = true }: { children?: ReactNode; 
   );
 }
 
-/** Drives `time` from 0 → T on a loop while visible. */
-export { K };

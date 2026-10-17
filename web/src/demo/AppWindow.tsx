@@ -112,7 +112,7 @@ export function AppWindow({ s }: { s: Snap }) {
                     <span className="truncate">{dest}</span>
                     <ChevronsUpDown size={11} className="ml-auto flex-none text-[var(--mac-text-2)]" />
                   </span>
-                  <span className="absolute truncate text-[11.5px] text-[var(--mac-text-2)]" style={{ left: G.colReason - WIN.side, width: 150 }}>
+                  <span className="absolute truncate text-[11.5px] text-[var(--mac-text-2)]" style={{ left: G.colReason - WIN.side, width: 168 }}>
                     {isTeach && s.taught ? "you chose this folder" : f.reason}
                   </span>
                   <span

@@ -18,7 +18,7 @@ export const FILES: Row[] = [
   { name: "budget_2026.xlsx", dest: "Spreadsheets", reason: ".xlsx file", why: "Rule", kind: "sheet" },
 ];
 export const TEACH_ROW = 6;
-export const NEW_FILE: Row = { name: "tortilla_de_patatas.txt", dest: "Recipes", reason: "similar to files filed here (71%)", why: "Rule", kind: "txt" };
+export const NEW_FILE: Row = { name: "tortilla_de_patatas.txt", dest: "Recipes", reason: "similar to 1 file filed here (71%)", why: "Rule", kind: "txt" };
 export const KEYWORDS = ["paella", "arroz", "receta", "ingredientes"];
 export const PICKED = 2; // "receta"
 

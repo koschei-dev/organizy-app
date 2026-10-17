@@ -6,7 +6,7 @@
 <p>
   <a href="../../releases/latest"><b>Download for macOS</b></a>
   &nbsp;·&nbsp;
-  <a href="https://koschei-dev.github.io/organizy-app/#demo">Try the live demo</a>
+  <a href="https://koschei-dev.github.io/organizy-app/#demo">Watch the demo</a>
   &nbsp;·&nbsp;
   <a href="https://koschei-dev.github.io/organizy-app/">Website</a>
   &nbsp;·&nbsp;
@@ -22,7 +22,7 @@
   </picture>
 </a>
 
-<sub>The website runs the same rules on a sample folder in your browser. <a href="https://koschei-dev.github.io/organizy-app/#demo">Try it</a>.</sub>
+<sub>The website has a longer demo, including how Organizy learns from a correction. <a href="https://koschei-dev.github.io/organizy-app/#demo">Watch it</a>.</sub>
 
 <details>
 <summary>A real screenshot of the app</summary>

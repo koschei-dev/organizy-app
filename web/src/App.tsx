@@ -1,11 +1,7 @@
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { type ReactNode, useRef, useState } from "react";
 import { Backdrop } from "./Backdrop";
-import { Flow } from "./Flow";
-import { decide } from "./engine";
-import { OrganizyDemo } from "./demo/OrganizyDemo";
-import { SAMPLE } from "./demo/state";
-import { defaultRules } from "./engine";
+import { DemoReel } from "./demo/Reel";
 import { Reviews } from "./Reviews";
 import ButtonCopy from "./smoothui/button-copy";
 import MaskRevealUp from "./smoothui/mask-reveal-up";
@@ -62,7 +58,7 @@ function Hero() {
           Organizy
         </a>
         <nav className="flex gap-[clamp(16px,3vw,48px)]" aria-label="Main">
-          <a className="max-md:hidden no-underline hover:text-[var(--accent)]" href="#demo">Try it</a>
+          <a className="max-md:hidden no-underline hover:text-[var(--accent)]" href="#demo">Watch it</a>
           <a className="max-md:hidden no-underline hover:text-[var(--accent)]" href="#how">How it works</a>
           <a className="max-md:hidden no-underline hover:text-[var(--accent)]" href="#install">Install</a>
           <a className="no-underline hover:text-[var(--accent)]" href={GH}>GitHub</a>
@@ -121,80 +117,45 @@ function Hero() {
   );
 }
 
-function FlowSection() {
-  return (
-    <section id="flow" className="px-[clamp(16px,2.2vw,32px)] pt-[clamp(32px,5vw,72px)] pb-[clamp(48px,6vw,96px)]">
-      <div className="mx-auto max-w-[1180px]">
-        <div className="mb-14 grid gap-6 md:grid-cols-12 md:items-end">
-          <h2 className="m-0 font-display text-[clamp(36px,4.4vw,64px)] leading-[1.02] font-medium tracking-[-0.02em] md:col-span-7">
-            <MaskRevealUp triggerOnView lines={["Files in.", "Folders out."]} />
-          </h2>
-          <Enter i={1} className="md:col-span-5">
-            <p className="m-0">
-              Organizy reads what’s inside each file, shows you the plan, and moves files only after you confirm. Then they go where they belong.
-            </p>
-          </Enter>
-        </div>
-        <Enter i={2}>
-          <Flow />
-        </Enter>
-      </div>
-    </section>
-  );
-}
-
 function Demo() {
-  const rules = defaultRules();
-  const correct = (ai: boolean) => SAMPLE.filter((f) => rules.find((r) => r.id === decide(rules, f, ai).ruleId)?.name === f.answer).length;
   return (
-    <section id="demo" className="px-[clamp(16px,2.2vw,32px)] py-[clamp(96px,10vw,160px)]">
+    <section id="demo" className="px-[clamp(16px,2.2vw,32px)] pt-[clamp(48px,6vw,96px)] pb-[clamp(96px,10vw,160px)]">
       <div className="mx-auto max-w-[1180px]">
         <div className="mb-10 grid gap-6 md:grid-cols-12 md:items-end">
           <h2 className="m-0 font-display text-[clamp(36px,4.4vw,64px)] leading-[1.02] font-medium tracking-[-0.02em] md:col-span-7">
-            <MaskRevealUp triggerOnView lines={["The real app,", "right here."]} />
+            <MaskRevealUp triggerOnView lines={["Watch it", "tidy up."]} />
           </h2>
           <Enter i={1} className="md:col-span-5">
             <p className="m-0">
-              This is Organizy, rebuilt to run in your browser on a folder of 21 messy files. Scan it, change a destination, move the files, then undo. Nothing leaves this page.
+              Eight files from a messy desktop, one correction, one move. A week later, a new recipe goes to the right folder on its own, because Organizy learned from that correction.
             </p>
           </Enter>
         </div>
         <Enter i={2}>
-          <OrganizyDemo />
-        </Enter>
-        <Enter i={3} className="mt-6 flex flex-wrap gap-x-10 gap-y-2 text-[15px] text-[var(--muted)]">
-          <span>
-            Rules alone sort <b className="text-[var(--ink)]">{correct(false)} of 21</b> correctly. Tick Local AI: <b className="text-[var(--ink)]">{correct(true)} of 21</b>.
-          </span>
-          <span>Double-click a file to read it. Change a destination and Organizy offers to learn from it.</span>
+          <DemoReel />
         </Enter>
       </div>
     </section>
   );
 }
 
-function Tester() {
-  const [name, setName] = useState("recibo_supermercado.pdf");
-  const rules = defaultRules();
-  const d = decide(rules, { name, content: "", size: 0, answer: "" }, false);
-  const folder = rules.find((r) => r.id === d.ruleId)?.name;
+const REASONS = [
+  ["factura_luz_sept.pdf", "Invoices & Receipts", "content mentions “total a pagar”"],
+  ["Alex_Kim_CV.docx", "Resumes & CVs", "name mentions “CV”"],
+  ["tortilla_de_patatas.txt", "Recipes", "similar to 1 file filed here (71%)"],
+] as const;
+
+/** A still from the app: every suggestion carries its reason. */
+function Reasons() {
   return (
-    <div data-ui className="mac rounded-[10px] bg-[var(--mac-window)] p-5" style={{ boxShadow: "var(--mac-shadow)" }}>
-      <label className="grid gap-2">
-        <span className="text-[12.5px] text-[var(--mac-text-2)]">A file name from your Downloads folder</span>
-        <input className="mac-input h-10 text-[15px]" value={name} onChange={(e) => setName(e.target.value)} spellCheck={false} />
-      </label>
-      <motion.div key={folder ?? "none"} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1" aria-live="polite">
-        <span className={`text-[16px] font-semibold ${folder ? "text-[var(--mac-tint-ink)]" : "text-[var(--mac-text-2)]"}`}>{folder ?? "Left where it is"}</span>
-        <span className="mono text-[12px] text-[var(--mac-text-2)]">{folder ? d.reason : "no rule matched the name; the app would read inside the file"}</span>
-      </motion.div>
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {["W-2_2025.pdf", "IMG_4478 (2).HEIC", "my_cv_english.docx", "Screenshot 2026-10-14 at 9.41.02.png", "untitled.bin"].map((t) => (
-          <button key={t} type="button" className="mac-btn" onClick={() => setName(t)}>
-            {t.length > 22 ? `${t.slice(0, 18)}….png` : t}
-          </button>
-        ))}
-      </div>
+    <div className="mac overflow-hidden rounded-[10px] border border-[var(--mac-line)] bg-[var(--mac-window)]" style={{ boxShadow: "var(--mac-shadow)" }}>
+      {REASONS.map(([file, folder, why], i) => (
+        <div key={file} className={`grid gap-x-4 gap-y-[2px] px-4 py-3 sm:grid-cols-[minmax(0,1fr)_auto] ${i ? "border-t border-[var(--mac-line)]" : ""}`}>
+          <span className="mono min-w-0 truncate text-[12.5px]">{file}</span>
+          <span className="font-semibold text-[var(--mac-tint-ink)] sm:text-right">{folder}</span>
+          <span className="text-[12px] text-[var(--mac-text-2)] sm:col-span-2">{why}</span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -215,9 +176,9 @@ function How() {
         </h2>
         <div className="grid gap-8">
           <P lead="To begin,">you choose a folder, or drop it on the window or the Dock icon. Downloads and Desktop are the usual suspects.</P>
-          <P lead="Then it reads.">Each file's name, type, size and what's written inside it decide where it should go. Type a name and see:</P>
+          <P lead="Then it reads.">Each file's name, type, size and what's written inside it decide where it should go, in English or Spanish. Every suggestion comes with its reason:</P>
           <Enter>
-            <Tester />
+            <Reasons />
           </Enter>
           <P lead="Before anything moves,">you see the whole list. Change any destination, or untick what should stay where it is.</P>
           <P lead="Afterwards,">every batch waits in History. One click puts each file back where it was.</P>
@@ -276,7 +237,7 @@ function Details() {
               {[
                 ["File types", "pdf, doc, docx, pages, rtf, txt"],
                 ["Name contains", "Screenshot, Scan"],
-                ["Keywords", "invoice, receipt, factura, recibo"],
+                ["Keywords", "receipt, amount due, factura"],
               ].map(([k, v]) => (
                 <div key={k} className="grid grid-cols-[120px_minmax(0,1fr)] gap-3 px-4 py-2.5">
                   <span>{k}</span>
@@ -286,7 +247,7 @@ function Details() {
             </div>
           }
         >
-          File types, name, keywords, size. Spanish keywords like factura and recibo are built in, and every rule previews what it catches.
+          File types, name, keywords, size. It already knows what invoices, bank statements, taxes and resumes look like, in English and Spanish, and every rule previews what it catches.
         </Mod>
         <Mod
           title="Never overwrites"
@@ -413,7 +374,7 @@ function Close() {
         <div className="grid grid-cols-2 gap-6 text-[15px] md:grid-cols-4">
           {[
             ["Organizy", <span key="a">A tidy Mac, one folder at a time</span>],
-            ["Pages", <><a href="#demo">Try it</a><a href="#how">How it works</a><a href="#install">Install</a></>],
+            ["Pages", <><a href="#demo">Watch it</a><a href="#how">How it works</a><a href="#install">Install</a></>],
             ["Code", <><a href={GH}>GitHub</a><a href={`${GH}/issues/new/choose`}>Report a bug</a><a href={`${GH}/security`}>Security</a></>],
             ["Made in", <span key="b">Santiago, Dominican Republic</span>],
           ].map(([h, body]) => (
@@ -437,7 +398,6 @@ export default function App() {
   return (
     <main>
       <Hero />
-      <FlowSection />
       <Demo />
       <How />
       <Details />

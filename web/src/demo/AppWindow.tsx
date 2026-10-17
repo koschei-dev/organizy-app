@@ -60,7 +60,6 @@ export function AppWindow({ s }: { s: Snap }) {
           <AnimatePresence initial={false}>
             {[...counts].map(([d, n]) => (
               <motion.span
-                layout
                 key={d}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -197,7 +196,7 @@ export function AppWindow({ s }: { s: Snap }) {
                       className={`flex-none rounded-full border px-2 py-[2px] text-[12px] ${
                         i === PICKED && s.picked ? "border-[var(--mac-tint)] bg-[var(--mac-tint)] text-white dark:text-[#111118]" : "border-[var(--mac-control-line)] bg-[var(--mac-control)]"
                       }`}
-                      style={{ width: CHIP_W, textAlign: "center" }}
+                      style={{ width: CHIP_W[i], textAlign: "center", paddingInline: 0, whiteSpace: "nowrap" }}
                     >
                       {k}
                     </span>

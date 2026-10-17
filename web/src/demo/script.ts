@@ -68,8 +68,10 @@ export const createBtn = { x: SHEET.x + SHEET.w - 50, y: SHEET.y + 122 };
 export const fieldPt = { x: SHEET.x + 150, y: SHEET.y + 78 };
 export const teachBtn = { x: WIN.w - 82, y: G.teachY + 20 };
 export const learnBtn = { x: WIN.w - 46, y: G.teachY + 20 };
-export const CHIP_W = 68;
-export const chipX = (i: number) => C0 + 224 + i * (CHIP_W + 8) + CHIP_W / 2; // centre of keyword chip i
+/** Each keyword chip's width, sized to its word ("ingredientes" needs the most room). */
+export const CHIP_W = [62, 54, 62, 96];
+const CHIP_GAP = 8;
+export const chipX = (i: number) => C0 + 224 + CHIP_W.slice(0, i).reduce((a, b) => a + b + CHIP_GAP, 0) + CHIP_W[i] / 2; // centre of keyword chip i
 export const moveBtn = { x: WIN.w - 62, y: G.footY + 24 };
 export const CONFIRM = { x: (WIN.w - 340) / 2 + 40, y: WIN.title, w: 340, h: 156 };
 export const confirmBtn = { x: CONFIRM.x + CONFIRM.w - 58, y: CONFIRM.y + 128 };

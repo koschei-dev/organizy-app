@@ -311,7 +311,7 @@ function FoldersScene({ t }: SceneProps) {
                 className="grid justify-items-center gap-1.5 text-center"
                 initial={false}
                 animate={i < n ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 14, scale: 0.85 }}
-                transition={{ type: "spring", bounce: 0.35, duration: 0.45 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               >
                 <FolderIcon />
                 <span className="text-[12px] leading-[1.2]">{f}</span>
@@ -410,7 +410,7 @@ function OverwriteScene({ t }: SceneProps) {
     <>
       <World camera={camera}>
         <Backdrop />
-        <FinderWindow title="Invoices & Receipts" r={LIST_WIN}>
+        <FinderWindow title="Documents" r={LIST_WIN}>
           <div className="grid grid-cols-[1fr_auto] border-b border-[var(--mac-line)] px-4 py-1.5 text-[11.5px] text-[var(--mac-text-2)]"><span>Name</span><span>Kind</span></div>
           {REPORTS.map((r, i) => (
             <motion.div
@@ -582,6 +582,7 @@ export function DraftOne() {
   return (
     <Film
       scenes={DRAFT_ONE}
+      rate={0.78}
       label="A short film of Organizy: files are dropped on the window, each gets a folder with a reason, you untick one, change one to a new Recipes folder and teach it, then confirm the move. History undoes it in one click. Thirteen ready folders, rules in plain words, and numbered names instead of overwrites. A week later a new recipe is filed by what it learned. Then how to install it."
     />
   );

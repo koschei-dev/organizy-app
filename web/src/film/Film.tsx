@@ -11,7 +11,35 @@ import { createContext, type ReactNode, useContext, useEffect, useLayoutEffect, 
  */
 
 export type SceneProps = { t: MotionValue<number>; dur: number };
-export type SceneDef = { id: string; chapter: string; dur: number; Scene: (p: SceneProps) => ReactNode };
+/**
+ * How a scene arrives over the one before it. The old scene stays put underneath while the new one
+ * fades, wipes, irises, pushes or zooms in on top. `at` places the iris centre (percent of the canvas).
+ */
+export type Enter =
+  | "fade" | "cut" | "wipe" | "wipeLeft" | "wipeUp" | "wipeDown" | "push" | "pushUp" | "zoom" | "zoomOut"
+  | { iris: [number, number] };
+export type SceneDef = { id: string; chapter: string; dur: number; Scene: (p: SceneProps) => ReactNode; enter?: Enter };
+
+const EASE = [0.7, 0, 0.2, 1] as const;
+function enterAnim(e: Enter = "fade") {
+  if (typeof e === "object") {
+    const [x, y] = e.iris;
+    return { initial: { clipPath: `circle(0% at ${x}% ${y}%)` }, animate: { clipPath: `circle(150% at ${x}% ${y}%)` }, transition: { duration: 0.7, ease: EASE } };
+  }
+  const T = { duration: 0.6, ease: EASE };
+  switch (e) {
+    case "cut": return { initial: false as const, animate: {}, transition: { duration: 0 } };
+    case "wipe": return { initial: { clipPath: "inset(0 100% 0 0)" }, animate: { clipPath: "inset(0 0% 0 0)" }, transition: T };
+    case "wipeLeft": return { initial: { clipPath: "inset(0 0 0 100%)" }, animate: { clipPath: "inset(0 0 0 0%)" }, transition: T };
+    case "wipeUp": return { initial: { clipPath: "inset(100% 0 0 0)" }, animate: { clipPath: "inset(0% 0 0 0)" }, transition: T };
+    case "wipeDown": return { initial: { clipPath: "inset(0 0 100% 0)" }, animate: { clipPath: "inset(0 0 0% 0)" }, transition: T };
+    case "push": return { initial: { x: "100%" }, animate: { x: "0%" }, transition: T };
+    case "pushUp": return { initial: { y: "100%" }, animate: { y: "0%" }, transition: T };
+    case "zoom": return { initial: { scale: 1.35, opacity: 0 }, animate: { scale: 1, opacity: 1 }, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const } };
+    case "zoomOut": return { initial: { scale: 0.82, opacity: 0 }, animate: { scale: 1, opacity: 1 }, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const } };
+    default: return { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.35 } };
+  }
+}
 
 export const LAND = { W: 1280, H: 720 };
 export const PORT = { W: 720, H: 960 };
@@ -20,7 +48,13 @@ const CanvasCtx = createContext<Canvas>({ ...LAND, portrait: false });
 /** The canvas the current scene is drawn on. */
 export const useCanvas = () => useContext(CanvasCtx);
 
-export function Film({ scenes, label, className = "" }: { scenes: SceneDef[]; label: string; className?: string }) {
+/**
+ * `rate` slows the whole film down (0.8 plays every scene 25% longer) without touching scene code.
+ * `chapters={false}` hides the chapter bar, for a short clip such as an intro.
+ */
+export function Film({ scenes, label, className = "", rate = 1, chapters: showChapters = true, loop = true }: {
+  scenes: SceneDef[]; label: string; className?: string; rate?: number; chapters?: boolean; loop?: boolean;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(1100);
   useLayoutEffect(() => {
@@ -35,9 +69,9 @@ export function Film({ scenes, label, className = "" }: { scenes: SceneDef[]; la
 
   const starts = useMemo(() => {
     let acc = 0;
-    return scenes.map((s) => { const a = acc; acc += s.dur; return a; });
-  }, [scenes]);
-  const T = starts[starts.length - 1] + scenes[scenes.length - 1].dur;
+    return scenes.map((s) => { const a = acc; acc += s.dur / rate; return a; });
+  }, [scenes, rate]);
+  const T = starts[starts.length - 1] + scenes[scenes.length - 1].dur / rate;
 
   const time = useMotionValue(0);
   const reduce = useReducedMotion();
@@ -58,12 +92,12 @@ export function Film({ scenes, label, className = "" }: { scenes: SceneDef[]; la
       ctl = animate(time, T, {
         duration: Math.max(0.01, T - time.get()),
         ease: "linear",
-        onComplete: () => { if (alive) { time.set(0); run(); } },
+        onComplete: () => { if (alive && loop) { time.set(0); run(); } else if (alive) setPaused(true); },
       });
     };
     run();
     return () => { alive = false; ctl?.stop(); };
-  }, [inView, paused, reduce, time, T, seek, frozen]);
+  }, [inView, paused, reduce, time, T, seek, frozen, loop]);
 
   // With reduced motion, the film holds still on the first frame of whichever chapter is chosen.
   useEffect(() => { if (reduce) time.set(starts[scenes.length - 1] + 0.01); }, [reduce, starts, scenes.length, time]);
@@ -80,14 +114,15 @@ export function Film({ scenes, label, className = "" }: { scenes: SceneDef[]; la
     const out: { title: string; from: number; to: number }[] = [];
     scenes.forEach((s, i) => {
       const last = out[out.length - 1];
-      if (last && last.title === s.chapter) last.to = starts[i] + s.dur;
-      else out.push({ title: s.chapter, from: starts[i], to: starts[i] + s.dur });
+      if (last && last.title === s.chapter) last.to = starts[i] + s.dur / rate;
+      else out.push({ title: s.chapter, from: starts[i], to: starts[i] + s.dur / rate });
     });
     return out;
-  }, [scenes, starts]);
+  }, [scenes, starts, rate]);
 
   const go = (t: number) => { time.set(t + 0.01); setSeek((n) => n + 1); };
   const def = scenes[active];
+  const enter = enterAnim(def.enter);
 
   return (
     <div ref={ref} className={className}>
@@ -102,13 +137,14 @@ export function Film({ scenes, label, className = "" }: { scenes: SceneDef[]; la
             <AnimatePresence initial={false}>
               <motion.div
                 key={def.id}
-                className="absolute inset-0"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.35 }}
+                className="absolute inset-0 overflow-hidden bg-[var(--surface)]"
+                style={{ zIndex: 2 }}
+                initial={enter.initial}
+                animate={enter.animate}
+                transition={enter.transition}
+                exit={{ zIndex: 1, transition: { duration: 0.75 } }}
               >
-                <SceneHost def={def} start={starts[active]} time={time} />
+                <SceneHost def={def} start={starts[active]} time={time} rate={rate} />
               </motion.div>
             </AnimatePresence>
           </div>
@@ -124,17 +160,17 @@ export function Film({ scenes, label, className = "" }: { scenes: SceneDef[]; la
           </button>
         )}
       </div>
-      <ol className="m-0 mt-5 grid list-none gap-2 p-0" style={{ gridTemplateColumns: `repeat(${chapters.length}, minmax(0, 1fr))` }} aria-label="Chapters">
+      {showChapters && <ol className="m-0 mt-5 grid list-none gap-2 p-0" style={{ gridTemplateColumns: `repeat(${chapters.length}, minmax(0, 1fr))` }} aria-label="Chapters">
         {chapters.map((c) => (
           <Chapter key={c.title} time={time} {...c} active={time.get() >= c.from && time.get() < c.to} onGo={() => go(c.from)} compact={portrait} />
         ))}
-      </ol>
+      </ol>}
     </div>
   );
 }
 
-function SceneHost({ def, start, time }: { def: SceneDef; start: number; time: MotionValue<number> }) {
-  const t = useTransform(time, (v) => Math.min(def.dur, Math.max(0, v - start)));
+function SceneHost({ def, start, time, rate }: { def: SceneDef; start: number; time: MotionValue<number>; rate: number }) {
+  const t = useTransform(time, (v) => Math.min(def.dur, Math.max(0, (v - start) * rate)));
   const S = def.Scene;
   return <S t={t} dur={def.dur} />;
 }

@@ -1,6 +1,5 @@
-import { AnimatePresence, motion, type MotionValue, useMotionValueEvent, useTransform } from "motion/react";
-import { Fragment, type CSSProperties, type ReactNode, useRef } from "react";
-import { click } from "../sfx";
+import { AnimatePresence, motion, type MotionValue, useTransform } from "motion/react";
+import { Fragment, type CSSProperties, type ReactNode } from "react";
 import { clamp01, easeInOut, easeOut, ramp, useBeat } from "../Film";
 
 /** Small building blocks for the "Kinetic type" film. Everything is a pure function of the scene clock `t`. */
@@ -200,12 +199,6 @@ const pos = (v: number, path: [number, number, number][]): [number, number] => {
 export const pointerAt = pos;
 
 function Ring({ t, c, color }: { t: T; c: number; color: string }) {
-  // A click sound when playback crosses the click (not when jumping across chapters).
-  const prev = useRef(t.get());
-  useMotionValueEvent(t, "change", (v) => {
-    if (prev.current < c && v >= c && v - prev.current < 0.25) click();
-    prev.current = v;
-  });
   const S = useTransform(t, (v) => 0.4 + 2.2 * easeOut(ramp(v, c, c + 0.5)));
   const O = useTransform(t, (v) => (v < c ? 0 : 0.9 * (1 - ramp(v, c, c + 0.5))));
   return <motion.span className="absolute rounded-full border-[3px]" style={{ left: -17, top: -17, width: 34, height: 34, scale: S, opacity: O, borderColor: color }} />;

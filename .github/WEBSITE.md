@@ -17,8 +17,7 @@ The hero is a short motion film, drawn in React and Motion (`web/src/film/`). No
 - `Film.tsx`: the engine. One clock drives every scene; each scene gets its own local time from 0, so it can be
   paused and chapters can be jumped to. Scenes draw on a fixed canvas (1280 × 720, or 720 × 960 on screens under
   720px) that is scaled to fit. Each scene can enter with a cut, fade, wipe, push, zoom or iris. Reduced motion
-  shows a still frame. Sound is off by default; the speaker button turns on synthesized clicks and whooshes
-  (`sfx.ts`, Web Audio, no audio files).
+  shows a still frame. The film is silent.
 - `intros.tsx`: the logo intro ("Messy" snaps into "Sorted.", then the wordmark).
 - `DraftTwo.tsx` and `two/`: the kinetic-type scenes. `two/kit.tsx` holds the type and motion pieces.
 - `SiteFilm.tsx`: the short cut (default, about 28 s) and the full film (about 77 s), with a toggle.

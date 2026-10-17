@@ -1,5 +1,4 @@
-import { Pause, Play, Volume2, VolumeX } from "lucide-react";
-import { onSfx, setSfx, sfxOn, thump, whoosh } from "./sfx";
+import { Pause, Play } from "lucide-react";
 import {
   animate, AnimatePresence, motion, type MotionValue, useInView, useMotionValue, useMotionValueEvent, useReducedMotion, useTransform,
 } from "motion/react";
@@ -133,16 +132,6 @@ export function Film({ scenes, label, className = "", rate = 1, chapters: showCh
   const def = scenes[active];
   const enter = enterAnim(def.enter);
 
-  // Sound: off by default; each scene's entrance gets a matching effect.
-  const [sound, setSound] = useState(sfxOn());
-  useEffect(() => onSfx(setSound), []);
-  useEffect(() => {
-    if (!sound || paused || active === 0) return;
-    const e = def.enter ?? "fade";
-    if (e === "cut") thump();
-    else if (e !== "fade") whoosh(e !== "wipeDown" && e !== "zoomOut");
-  }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const togglePlay = () => {
     if (paused && time.get() >= T - 0.05) time.set(0); // finished: play again from the start
     setPaused((v) => !v);
@@ -176,15 +165,6 @@ export function Film({ scenes, label, className = "", rate = 1, chapters: showCh
         </CanvasCtx.Provider>
         {!reduce && !bare && (
           <div className="absolute right-3 bottom-3 z-10 flex gap-2">
-            <button
-              type="button"
-              onClick={() => setSfx(!sound)}
-              aria-label={sound ? "Turn sound off" : "Turn sound on"}
-              aria-pressed={sound}
-              className="grid size-9 place-items-center rounded-full border border-[var(--line)] bg-[var(--bg)]/85 text-[var(--ink)] backdrop-blur transition-colors hover:border-[var(--accent)]"
-            >
-              {sound ? <Volume2 size={15} /> : <VolumeX size={15} />}
-            </button>
             <button
               type="button"
               onClick={togglePlay}

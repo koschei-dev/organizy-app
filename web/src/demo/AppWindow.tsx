@@ -1,7 +1,7 @@
 import { Check, ChevronsUpDown, Eye, Folder, GraduationCap, History, Inbox as TrayIcon, ListChecks, PanelLeft, Settings, WandSparkles } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import {
-  CHIP_W, CONFIRM, FILES, G, KEYWORDS, MENU_ITEM_H, MENU_ITEMS, menuTop, NEW_FILE, PICKED, rowCY, SHEET, type Row, type Snap, TEACH_ROW, WIN,
+  CHIP_W, CONFIRM, FILES, G, UNTICK_ROW, KEYWORDS, MENU_ITEM_H, MENU_ITEMS, menuTop, NEW_FILE, PICKED, rowCY, SHEET, type Row, type Snap, TEACH_ROW, WIN,
 } from "./script";
 import { FileGlyph } from "./FileGlyph";
 
@@ -89,7 +89,8 @@ export function AppWindow({ s }: { s: Snap }) {
               const isTeach = listed && i === TEACH_ROW;
               const dest = isTeach && s.taught ? "Recipes" : f.dest;
               const why = isTeach && s.taught ? "You" : f.why;
-              const gone = s.view === "list" && i < s.leaving;
+              const isOff = listed && i === UNTICK_ROW && s.unticked;
+              const gone = s.view === "list" && i < s.leaving && !isOff;
               const learned = s.view === "list2";
               return (
                 <motion.div
@@ -101,7 +102,15 @@ export function AppWindow({ s }: { s: Snap }) {
                   className={`absolute right-0 left-0 flex items-center ${i % 2 ? "bg-[var(--mac-alt)]" : ""} ${learned ? "bg-[var(--mac-tint-soft)]" : ""}`}
                   style={{ top: G.row * i, height: G.row }}
                 >
-                  <span className="absolute flex items-center gap-2" style={{ left: G.colName - WIN.side, width: G.colDest - G.colName - 14 }}>
+                  {(listed || learned) && (
+                    <span
+                      className={`absolute grid size-[14px] place-items-center rounded-[4px] border ${isOff ? "border-[var(--mac-control-line)] bg-[var(--mac-control)]" : "border-[var(--mac-tint)] bg-[var(--mac-tint)]"}`}
+                      style={{ left: G.colCheck - WIN.side }}
+                    >
+                      {!isOff && <Check size={10} strokeWidth={3} className="text-white dark:text-[#111118]" />}
+                    </span>
+                  )}
+                  <span className={`absolute flex items-center gap-2 ${isOff ? "opacity-45" : ""}`} style={{ left: G.colName - WIN.side, width: G.colDest - G.colName - 14 }}>
                     <FileGlyph kind={f.kind} size={16} />
                     <span className="mono truncate text-[12px]">{f.name}</span>
                   </span>
@@ -145,7 +154,7 @@ export function AppWindow({ s }: { s: Snap }) {
               ) : (
                 <div className="grid justify-items-center gap-1">
                   <span className="grid size-9 place-items-center rounded-full bg-[var(--mac-tint-soft)] text-[var(--mac-tint)]"><Check size={18} /></span>
-                  <p className="m-0 text-[15px] font-semibold">Moved 8 files</p>
+                  <p className="m-0 text-[15px] font-semibold">Moved 7 files</p>
                   <p className="m-0 text-[var(--mac-text-2)]">Undo anytime from History.</p>
                 </div>
               )}
@@ -212,7 +221,7 @@ export function AppWindow({ s }: { s: Snap }) {
             </span>
           ) : (
             <span className="truncate text-[var(--mac-text-2)]">
-              {s.view === "list" ? "8 files, 7 folders. Nothing moves until you click." : s.view === "list2" ? "Learned from what you filed before." : ""}
+              {s.view === "list" ? (s.unticked ? "7 of 8 selected. Nothing moves until you click." : "8 files, 7 folders. Nothing moves until you click.") : s.view === "list2" ? "Learned from what you filed before." : ""}
             </span>
           )}
           <span className="ml-auto flex items-center gap-3">
@@ -266,7 +275,7 @@ export function AppWindow({ s }: { s: Snap }) {
       {/* move confirmation */}
       <Sheet show={s.confirm} box={CONFIRM}>
         <img src="/organizy-app/icon-96.png" alt="" width={36} height={36} className="mb-2" />
-        <p className="m-0 mb-1 font-semibold">Move 8 files?</p>
+        <p className="m-0 mb-1 font-semibold">Move 7 files?</p>
         <p className="m-0 mb-3 text-[var(--mac-text-2)]">They go into folders inside Documents › Organizy. You can undo this from History.</p>
         <div className="flex justify-end gap-2">
           <span className="mac-btn">Cancel</span>

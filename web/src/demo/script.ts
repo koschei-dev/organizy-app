@@ -18,6 +18,7 @@ export const FILES: Row[] = [
   { name: "budget_2026.xlsx", dest: "Spreadsheets", reason: ".xlsx file", why: "Rule", kind: "sheet" },
 ];
 export const TEACH_ROW = 6;
+export const UNTICK_ROW = 7; // budget_2026.xlsx stays where it is
 export const NEW_FILE: Row = { name: "tortilla_de_patatas.txt", dest: "Recipes", reason: "similar to 1 file filed here (71%)", why: "Rule", kind: "txt" };
 export const KEYWORDS = ["paella", "arroz", "receta", "ingredientes"];
 export const PICKED = 2; // "receta"
@@ -26,6 +27,7 @@ export const K = {
   lassoStart: 1.0, lassoEnd: 1.9,
   grab: 2.3, hover: 3.0, drop: 3.5,
   scan: 3.65, rowStep: 0.24, scanEnd: 5.75,
+  untick: 6.45,
   menu: 7.0, newFolder: 7.9, typeStart: 8.15, typeEnd: 9.0, create: 9.4,
   teachShow: 9.55, teachClick: 10.6, chip: 11.3, learn: 11.9, learnedEnd: 12.9,
   moveClick: 13.3, sheet: 13.45, confirm: 14.2, moving: 14.35, moved: 15.3,
@@ -35,7 +37,7 @@ export const K = {
 
 export const CHAPTERS = [
   { id: "drop", title: "Drop", at: 0, line: "Drop a few files, or a whole folder, on the window." },
-  { id: "review", title: "Review", at: K.scan, line: "Organizy reads each one and suggests a folder, with the reason." },
+  { id: "review", title: "Review", at: K.scan, line: "Organizy reads each one and suggests a folder, with the reason. Untick what should stay." },
   { id: "teach", title: "Teach", at: K.menu - 0.6, line: "Change one, and it offers to remember." },
   { id: "move", title: "Move", at: K.moveClick - 0.3, line: "Nothing moves until you confirm. Undo is one click away." },
   { id: "learn", title: "It learns", at: K.act2, line: "Next week, a new recipe goes straight to Recipes." },
@@ -53,7 +55,7 @@ const C0 = WIN.side; // content x
 export const G = {
   toolbarY: 52, chipsY: 96, headY: 136, rowsY: 164, row: 34,
   teachY: 460, footY: 512,
-  colName: C0 + 16, colDest: C0 + 236, destW: 172, colReason: C0 + 420, colWhy: WIN.w - 16,
+  colCheck: C0 + 16, colName: C0 + 40, colDest: C0 + 236, destW: 172, colReason: C0 + 420, colWhy: WIN.w - 16,
 };
 export const rowCY = (i: number) => G.rowsY + G.row * i + G.row / 2;
 export const MENU_ITEMS = ["Invoices & Receipts", "Bank Statements", "Taxes", "Resumes & CVs", "Documents", "Spreadsheets"];
@@ -86,6 +88,7 @@ export type Snap = {
   teach: "none" | "offer" | "keywords" | "learned";
   picked: boolean;
   confirm: boolean;
+  unticked: boolean; // the last row was unticked, so it stays put
   leaving: number; // rows that have flown out
   drag: "none" | "stack" | "one";
   selected: number; // desktop icons selected so far
@@ -117,6 +120,7 @@ export function snapAt(t: number, opts: { windowStartsClosed?: boolean } = {}): 
     teach,
     picked: t >= K.chip,
     confirm: t >= K.sheet && t < K.confirm + 0.1,
+    unticked: t >= K.untick && t < K.T - 0.3,
     leaving: t < K.moving ? 0 : Math.min(8, Math.floor((t - K.moving) / 0.1) + 1),
     drag: t >= K.grab && t < K.drop ? "stack" : t >= K.grab2 && t < K.drop2 ? "one" : "none",
     selected: Math.floor(lassoP * 8 + (t >= K.lassoEnd ? 1 : 0)),
@@ -161,6 +165,7 @@ export function cursorPath(L: Layout): KF[] {
     [K.drop, L.drop],
     [K.scan + 0.9, w({ x: 640, y: 110 })],
     [K.scanEnd + 0.4, w({ x: 650, y: 120 })],
+    ...at(K.untick, w({ x: G.colCheck + 7, y: rowCY(UNTICK_ROW) }), 0.3),
     ...at(K.menu, w({ x: G.colDest + G.destW / 2 - 20, y: rowCY(TEACH_ROW) }), 0.3),
     ...at(K.newFolder, w({ x: G.colDest + 60, y: menuNewFolderCY }), 0.35),
     [K.typeStart, w(fieldPt)],
@@ -195,7 +200,7 @@ export function along(kfs: KF[], t: number): Pt {
   return kfs[kfs.length - 1][1];
 }
 
-export const CLICKS = [K.lassoStart, K.grab, K.drop, K.menu, K.newFolder, K.create, K.teachClick, K.chip, K.learn, K.moveClick, K.confirm, K.grab2, K.drop2];
+export const CLICKS = [K.lassoStart, K.grab, K.drop, K.untick, K.menu, K.newFolder, K.create, K.teachClick, K.chip, K.learn, K.moveClick, K.confirm, K.grab2, K.drop2];
 /** 0..1 while a click ring is expanding, else -1. */
 export function clickAt(t: number) {
   for (const c of CLICKS) if (t >= c && t < c + 0.35) return (t - c) / 0.35;

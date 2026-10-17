@@ -3,7 +3,7 @@ import { type ReactNode, useLayoutEffect, useMemo, useRef, useState } from "reac
 import { AppWindow } from "./AppWindow";
 import { Cursor } from "./Cursor";
 import { FileGlyph } from "./FileGlyph";
-import { along, clickAt, cursorPath, FILES, K, type Layout, NEW_FILE, pressed, type Pt, type Snap, sameSnap, snapAt } from "./script";
+import { along, clickAt, cursorPath, FILES, K, UNTICK_ROW, type Layout, NEW_FILE, pressed, type Pt, type Snap, sameSnap, snapAt } from "./script";
 
 /** Turns a time value into the scene: discrete state for React, cursor position as motion values. */
 export function usePlayer(time: MotionValue<number>, L: Layout, opts: { windowStartsClosed?: boolean } = {}) {
@@ -132,7 +132,7 @@ export function DesktopIcons({ L, snap, sink, tilt = false }: { L: Layout; snap:
       {FILES.map((f, i) => {
         const p = L.icons[i];
         const sel = i < snap.selected && snap.view !== "moved" && snap.view !== "scan2" && snap.view !== "list2" && !snap.desktopGone;
-        const gone = snap.desktopGone;
+        const gone = snap.desktopGone && !(i === UNTICK_ROW && snap.unticked);
         const rot = tilt ? ((i * 37) % 17) - 8 : 0;
         return (
           <motion.div

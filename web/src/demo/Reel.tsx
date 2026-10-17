@@ -24,6 +24,7 @@ const L: Layout = {
   rest: { x: 700, y: 650 },
 };
 const SINK = { x: 110, y: 640 };
+export { L as LAYOUT, SINK };
 
 // Window-relative rectangle → stage coordinates.
 const w = (x0: number, y0: number, x1: number, y1: number): [number, number, number, number] => [L.win.x + x0, L.win.y + y0, L.win.x + x1, L.win.y + y1];
@@ -123,7 +124,7 @@ export function DemoReel() {
   );
 }
 
-function DocumentsFolder({ bump }: { bump: boolean }) {
+export function DocumentsFolder({ bump }: { bump: boolean }) {
   return (
     <motion.div
       className="absolute top-0 left-0 grid w-[104px] justify-items-center gap-1 text-center"

@@ -61,10 +61,11 @@ const Word = ({ children, progress, range }: WordProps) => {
     shouldReduceMotion ? [1, 1] : [0, 1]
   );
 
+  // The faint copy underneath is decoration: hidden from screen readers and from copy and paste.
   return (
     <span className="relative mr-2 inline-block">
       {shouldReduceMotion ? null : (
-        <span className="text-[var(--ink)]/10">{children}</span>
+        <span aria-hidden="true" className="text-[var(--ink)]/10 select-none">{children}</span>
       )}
       <motion.span
         className="absolute inset-0 text-[var(--ink)]"

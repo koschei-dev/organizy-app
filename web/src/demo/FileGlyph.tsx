@@ -1,6 +1,6 @@
-import type { Row } from "./script";
+export type FileKind = "pdf" | "img" | "doc" | "sheet" | "txt";
 
-const TINT: Record<Row["kind"], { band: string; label: string }> = {
+const TINT: Record<FileKind, { band: string; label: string }> = {
   pdf: { band: "#E5484D", label: "PDF" },
   img: { band: "#3E9BF0", label: "IMG" },
   doc: { band: "#2F6FEB", label: "DOC" },
@@ -9,7 +9,7 @@ const TINT: Record<Row["kind"], { band: string; label: string }> = {
 };
 
 /** A small document icon with a coloured type band, like Finder's generic file icons. */
-export function FileGlyph({ kind, size = 48 }: { kind: Row["kind"]; size?: number }) {
+export function FileGlyph({ kind, size = 48 }: { kind: FileKind; size?: number }) {
   const t = TINT[kind];
   return (
     <svg width={size} height={size * 1.25} viewBox="0 0 40 50" aria-hidden className="flex-none">

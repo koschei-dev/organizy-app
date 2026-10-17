@@ -1,7 +1,7 @@
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { type ReactNode, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import type { ReactNode } from "react";
 import { Backdrop } from "./Backdrop";
-import { DemoReel } from "./demo/Reel";
+import { SiteFilm } from "./film/SiteFilm";
 import { Reviews } from "./Reviews";
 import ButtonCopy from "./smoothui/button-copy";
 import MaskRevealUp from "./smoothui/mask-reveal-up";
@@ -44,98 +44,68 @@ function Button({ href, children, className = "" }: { href: string; children: Re
 function Hero() {
   const reduce = useReducedMotion();
   const dl = downloadLink(useRelease());
-  const ref = useRef<HTMLElement>(null);
-  // As the page scrolls away, the monument settles back: a little smaller, a little lighter.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
-  const lift = useTransform(scrollYProgress, [0, 1], ["0%", "-8%"]);
-  const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0.25]);
   return (
-    <header ref={ref} className="relative isolate grid min-h-svh grid-rows-[auto_1fr_auto] px-[clamp(20px,2.2vw,32px)] py-6">
+    <header id="top" className="relative isolate px-[clamp(16px,2.2vw,32px)] pt-6 pb-[clamp(72px,8vw,120px)]">
       <Backdrop />
-      <div className="flex items-baseline justify-between gap-6 text-[15px]">
+      <div className="mx-auto flex max-w-[1180px] items-baseline justify-between gap-6 text-[15px]">
         <a href="#top" className="font-medium no-underline">
           Organizy
         </a>
         <nav className="flex gap-[clamp(16px,3vw,48px)]" aria-label="Main">
-          <a className="max-md:hidden no-underline hover:text-[var(--accent)]" href="#demo">Watch it</a>
-          <a className="max-md:hidden no-underline hover:text-[var(--accent)]" href="#how">How it works</a>
+          <a className="max-md:hidden no-underline hover:text-[var(--accent)]" href="#read" onClick={openReading}>Read it</a>
           <a className="max-md:hidden no-underline hover:text-[var(--accent)]" href="#install">Install</a>
           <a className="no-underline hover:text-[var(--accent)]" href={GH}>GitHub</a>
         </nav>
       </div>
-      <motion.div className="self-center justify-self-center" style={reduce ? undefined : { scale, y: lift, opacity: fade }}>
-      <h1
-        id="top"
-        aria-label="Organizy"
-        className="m-0 inline-flex items-baseline font-display text-[clamp(64px,20.5vw,380px)] leading-none font-bold tracking-[-0.04em]"
-      >
-        <motion.span
-          className="mr-[0.02em] inline-block size-[0.72em] translate-y-[0.02em] overflow-hidden"
-          initial={reduce ? false : { clipPath: "inset(0 0 100% 0)" }}
-          animate={{ clipPath: "inset(0 0 0% 0)" }}
-          transition={{ duration: 1.1, ease: [0.7, 0, 0.2, 1] }}
-        >
-          <motion.img
-            src="/organizy-app/icon-512.png"
-            alt=""
-            width={512}
-            height={512}
-            className="size-full object-cover"
-            initial={reduce ? false : { scale: 1.12 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 1.1, ease: [0.7, 0, 0.2, 1] }}
-          />
-        </motion.span>
-        <span aria-hidden className="-mb-[0.28em] overflow-hidden pb-[0.28em]">
-          <motion.span
-            className="inline-block"
-            initial={reduce ? false : { y: "100%", opacity: 0, filter: "blur(8px)" }}
-            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-            transition={{ duration: 0.9, ease, delay: 0.25 }}
-          >
-            rganizy
-          </motion.span>
-        </span>
-      </h1>
-      </motion.div>
+      <h1 className="sr-only">Organizy</h1>
       <motion.div
-        className="grid items-end gap-6 md:grid-cols-12"
+        className="mx-auto mt-[clamp(28px,4vw,52px)] grid max-w-[1180px] items-end gap-6 md:grid-cols-12"
         initial={reduce ? false : { opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease, delay: 0.6 }}
+        transition={{ duration: 0.7, ease }}
       >
-        <p className="m-0 max-w-[48ch] md:col-span-5 md:col-start-6">
+        <p className="m-0 max-w-[40ch] text-[clamp(20px,1.7vw,24px)] leading-[1.4] md:col-span-7">
           A free Mac app that reads a messy folder, suggests where every file belongs, and moves nothing until you confirm.
         </p>
-        <div className="grid justify-items-start gap-2 md:col-span-2 md:col-start-11 md:justify-items-end">
+        <div className="grid justify-items-start gap-2 md:col-span-4 md:col-start-9 md:justify-items-end">
           <Button href={dl.href}>{dl.label}</Button>
           <span className="text-[13px] text-[var(--muted)] md:text-right">{dl.note}</span>
         </div>
+      </motion.div>
+      <motion.div
+        className="mx-auto mt-[clamp(24px,3vw,40px)] max-w-[1180px]"
+        initial={reduce ? false : { opacity: 0, y: 18, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.8, ease, delay: 0.15 }}
+      >
+        <SiteFilm />
       </motion.div>
     </header>
   );
 }
 
-function Demo() {
+/** Opens the "Prefer to read?" section when a link points into it. */
+function openReading() {
+  const d = document.getElementById("read") as HTMLDetailsElement | null;
+  if (d) d.open = true;
+}
+
+/** The film's story as text, for people who would rather read, and for screen readers and search. */
+function Reading() {
   return (
-    <section id="demo" className="px-[clamp(16px,2.2vw,32px)] pt-[clamp(48px,6vw,96px)] pb-[clamp(96px,10vw,160px)]">
-      <div className="mx-auto max-w-[1180px]">
-        <div className="mb-10 grid gap-6 md:grid-cols-12 md:items-end">
-          <h2 className="m-0 font-display text-[clamp(36px,4.4vw,64px)] leading-[1.02] font-medium tracking-[-0.02em] md:col-span-7">
-            <MaskRevealUp triggerOnView lines={["Watch it", "tidy up."]} />
-          </h2>
-          <Enter i={1} className="md:col-span-5">
-            <p className="m-0">
-              Eight files from a messy desktop, one correction, one move. A week later, a new recipe goes to the right folder on its own, because Organizy learned from that correction.
-            </p>
-          </Enter>
-        </div>
-        <Enter i={2}>
-          <DemoReel />
-        </Enter>
-      </div>
-    </section>
+    <details id="read" className="group border-y border-[var(--line)]">
+      <summary className="flex cursor-pointer list-none items-baseline justify-between gap-6 px-[clamp(20px,2.2vw,32px)] py-10 [&::-webkit-details-marker]:hidden">
+        <span className="mx-auto flex w-full max-w-[1180px] flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
+          <span className="font-display text-[clamp(30px,3.4vw,48px)] leading-tight font-bold tracking-[-0.02em]">Prefer to read?</span>
+          <span className="flex items-baseline gap-3 text-[var(--muted)]">
+            The same story, in text.
+            <span aria-hidden className="inline-block text-[var(--ink)] transition-transform duration-300 group-open:rotate-45">+</span>
+          </span>
+        </span>
+      </summary>
+      <How />
+      <Details />
+    </details>
   );
 }
 
@@ -374,7 +344,7 @@ function Close() {
         <div className="grid grid-cols-2 gap-6 text-[15px] md:grid-cols-4">
           {[
             ["Organizy", <span key="a">A tidy Mac, one folder at a time</span>],
-            ["Pages", <><a href="#demo">Watch it</a><a href="#how">How it works</a><a href="#install">Install</a></>],
+            ["Pages", <><a href="#top">The film</a><a href="#read" onClick={openReading}>Read it</a><a href="#install">Install</a></>],
             ["Code", <><a href={GH}>GitHub</a><a href={`${GH}/issues/new/choose`}>Report a bug</a><a href={`${GH}/security`}>Security</a></>],
             ["Made in", <span key="b">Santiago, Dominican Republic</span>],
           ].map(([h, body]) => (
@@ -398,9 +368,7 @@ export default function App() {
   return (
     <main>
       <Hero />
-      <Demo />
-      <How />
-      <Details />
+      <Reading />
       <Install />
       <section className="px-[clamp(20px,2.2vw,32px)] pb-[clamp(120px,12vw,200px)]" id="reviews">
         <Reviews />
